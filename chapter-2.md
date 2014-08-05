@@ -13,3 +13,6 @@
 * 余弦相似度
 * 使用Python实现K最邻近算法
 * 图书漂流站（BookCrossing）数据集
+
+![](img/chapter-2-1.png)
+
