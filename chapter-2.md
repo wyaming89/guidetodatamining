@@ -144,3 +144,144 @@ last.fm上对音乐和演唱会的推荐（相似歌手）：
 
 ![](img/chapter-2-23.png)
 
+## 使用Python代码来表示数据（终于要开始编程了）
+
+在Python中，我们可以用多种方式来描述上表中的数据，这里我选择Python的字典类型（或者称为关联数组、哈希表）。
+
+注：本书的所有代码可以在[这里](code/)找到。
+
+```python
+users = {"Angelica": {"Blues Traveler": 3.5, "Broken Bells": 2.0, "Norah Jones": 4.5, "Phoenix": 5.0, "Slightly Stoopid": 1.5, "The Strokes": 2.5, "Vampire Weekend": 2.0},
+         "Bill":{"Blues Traveler": 2.0, "Broken Bells": 3.5, "Deadmau5": 4.0, "Phoenix": 2.0, "Slightly Stoopid": 3.5, "Vampire Weekend": 3.0},
+         "Chan": {"Blues Traveler": 5.0, "Broken Bells": 1.0, "Deadmau5": 1.0, "Norah Jones": 3.0, "Phoenix": 5, "Slightly Stoopid": 1.0},
+         "Dan": {"Blues Traveler": 3.0, "Broken Bells": 4.0, "Deadmau5": 4.5, "Phoenix": 3.0, "Slightly Stoopid": 4.5, "The Strokes": 4.0, "Vampire Weekend": 2.0},
+         "Hailey": {"Broken Bells": 4.0, "Deadmau5": 1.0, "Norah Jones": 4.0, "The Strokes": 4.0, "Vampire Weekend": 1.0},
+         "Jordyn":  {"Broken Bells": 4.5, "Deadmau5": 4.0, "Norah Jones": 5.0, "Phoenix": 5.0, "Slightly Stoopid": 4.5, "The Strokes": 4.0, "Vampire Weekend": 4.0},
+         "Sam": {"Blues Traveler": 5.0, "Broken Bells": 2.0, "Norah Jones": 3.0, "Phoenix": 5.0, "Slightly Stoopid": 4.0, "The Strokes": 5.0},
+         "Veronica": {"Blues Traveler": 3.0, "Norah Jones": 5.0, "Phoenix": 4.0, "Slightly Stoopid": 2.5, "The Strokes": 3.0}
+        }
+```
+
+我们可以用以下方式来获取某个用户的评分：
+
+```python
+>>> user["Veronica"]
+{"Blues Traveler": 3.0, "Norah Jones": 5.0, "Phoenix": 4.0, "Slightly Stoopid": 2.5, "The Strokes": 3.0}
+>>>
+```
+
+### 计算曼哈顿距离
+
+```python
+def manhattan(rating1, rating2):
+    """计算曼哈顿距离。rating1和rating2参数中存储的数据格式均为
+    {'The Strokes': 3.0, 'Slightly Stoopid': 2.5}"""
+    distance = 0
+    for key in rating1:
+        if key in rating2:
+            distance += abs(rating1[key] - rating2[key])
+    return distance
+```
+
+我们可以做一下测试：
+
+```python
+>>> manhattan(users['Hailey'], users['Veronica'])
+2.0
+>>> manhattan(users['Hailey'], users['Jordyn'])
+7.5
+>>>
+```
+
+下面我们编写一个函数来找出距离最近的用户（其实该函数会返回一个用户列表，按距离排序）：
+
+```python
+def computeNearestNeighbor(username, users):
+    """计算所有用户至username用户的距离，倒序排列并返回结果列表"""
+    distances = []
+    for user in users:
+        if user != username:
+            distance = manhattan(users[user], users[username])
+            distances.append((distance, user))
+    # 按距离排序——距离近的排在前面
+    distances.sort()
+    return distances
+```
+
+简单测试一下：
+
+```python
+>>> computeNearestNeighbor("Hailey", users)
+[(2.0, 'Veronica'), (4.0, 'Chan'), (4.0, 'Sam'), (4.5, 'Dan'), (5.0, 'Angelica'), (5.5, 'Bill'), (7.5, 'Jordyn')]
+```
+
+最后，我们结合以上内容来进行推荐。假设我想为Hailey做推荐，这里我找到了离他距离最近的用户Veronica。然后，我会找到出Veronica评价过但Hailey没有评价的乐队，并假设Hailey对这些陌生乐队的评价会和Veronica相近。比如，Hailey没有评价过Phoenix乐队，而Veronica对这个乐队打出了4分，所以我们认为Hailey也会喜欢这支乐队。下面的函数就实现了这一逻辑：
+
+```python
+def recommend(username, users):
+    """返回推荐结果列表"""
+    # 找到距离最近的用户
+    nearest = computeNearestNeighbor(username, users)[0][1]
+    recommendations = []
+    # 找出这位用户评价过、但自己未曾评价的乐队
+    neighborRatings = users[nearest]
+    userRatings = users[username]
+    for artist in neighborRatings:
+        if not artist in userRatings:
+            recommendations.append((artist, neighborRatings[artist]))
+    # 按照评分进行排序
+    return sorted(recommendations, key=lambda artistTuple: artistTuple[1], reverse = True)
+```
+
+下面我们就可以用它来为Hailey做推荐了：
+
+```python
+>>> recommend('Hailey', users)
+[('Phoenix', 4.0), ('Blues Traveler', 3.0), ('Slightly Stoopid', 2.5)]
+```
+
+运行结果和我们的预期相符。我们看可以看到，和Hailey距离最近的用户是Veronica，Veronica对Phoenix乐队打了4分。我们再试试其他人：
+
+```python
+>>> recommend('Chan', users)
+[('The Strokes', 4.0), ('Vampire Weekend', 1.0)]
+>>> recommend('Sam', users)
+[('Deadmau5', 1.0)]
+```
+
+我们可以猜想Chan会喜欢The Strokes乐队，而Sam不会太欣赏Deadmau5。
+
+```python
+>>> recommend('Angelica', users)
+[]
+```
+
+对于Angelica，我们得到了空的返回值，也就是说我们无法对其进行推荐。让我们看看是哪里有问题：
+
+```python
+>>> computeNearestNeighbor('Angelica', users)
+[(3.5, 'Veronica'), (4.5, 'Chan'), (5.0, 'Hailey'), (8.0, 'Sam'), (9.0, 'Bill'), (9.0, 'Dan'), (9.5, 'Jordyn')]
+```
+
+Angelica最相似的用户是Veronica，让我们回头看看数据：
+
+![](img/chapter-2-13.png)
+
+我们可以看到，Veronica评价过的乐队，Angelica也都评价过了，所以我们没有推荐。
+
+之后，我们会讨论如何解决这一问题。
+
+**作业：实现一个计算闵可夫斯基距离的函数，并在计算用户距离时使用它。**
+
+```python
+def minkowski(rating1, rating2, r):
+    distance = 0
+    for key in rating1:
+        if key in rating2:
+            distance += pow(abs(rating1[key] - rating2[key]), r)
+    return pow(distance, 1.0 / r)
+
+# 修改computeNearestNeighbor函数中的一行
+distance = minkowski(users[user], users[username], 2)
+# 这里2表示使用欧几里得距离
+```
