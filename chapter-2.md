@@ -285,3 +285,40 @@ def minkowski(rating1, rating2, r):
 distance = minkowski(users[user], users[username], 2)
 # 这里2表示使用欧几里得距离
 ```
+
+### 用户的问题
+
+让我们仔细看看用户对乐队的评分，可以发现每个用户的打分标准非常不同：
+
+* Bill没有打出极端的分数，都在2至4分之间；
+* Jordyn似乎喜欢所有的乐队，打分都在4至5之间；
+* Hailey是一个有趣的人，他的分数不是1就是4。
+
+那么，如何比较这些用户呢？比如Hailey的4分相当于Jordan的4分还是5分呢？我觉得更接近5分。这样一来就会影响到推荐系统的准确性了。
+
+![](img/chapter-2-24.png)
+
+* 左：我非常喜欢Broken Bells乐队，所以我给他们打4分！
+* 右：Broken Bells乐队还可以，我打4分。
+
+### 皮尔逊相关系数
+
+解决方法之一是使用皮尔逊相关系数。简单起见，我们先看下面的数据（和之前的数据不同）：
+
+![](img/chapter-2-25.png)
+
+这种现象在数据挖掘领域称为“分数膨胀”。Clara最低给了4分——她所有的打分都在4至5分之间。我们将它绘制成图表：
+
+![](img/chapter-2-26.png)
+
+**一条直线——完全吻合！！！**
+
+直线即表示Clara和Robert的偏好完全一致。他们都认为Phoenix是最好的乐队，然后是Blues Traveler、Norah Jones。如果Clara和Robert的意见不一致，那么落在直线上的点就越少。
+
+**意见基本一致的情形**
+
+![](img/chapter-2-27.png)
+
+**意见不一致的情形**
+
+![](img/chapter-2-28.png)
