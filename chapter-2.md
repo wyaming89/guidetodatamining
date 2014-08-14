@@ -319,6 +319,103 @@ distance = minkowski(users[user], users[username], 2)
 
 ![](img/chapter-2-27.png)
 
-**意见不一致的情形**
+**意见不太一致的情形**
 
 ![](img/chapter-2-28.png)
+
+所以从图表上理解，意见相一致表现为一条直线。皮尔逊相关系数用于衡量两个变量之间的相关性（这里的两个变量指的是Clara和Robert），它的值在-1至1之间，1表示完全吻合，-1表示完全相悖。从直观上理解，最开始的那条直线皮尔逊相关系数为1，第二张是0.91，第三张是0.81。因此我们利用这一点来找到相似的用户。
+
+皮尔逊相关系数的计算公式是：
+
+![](img/chapter-2-29.png)
+
+这里我说说自己的经历。我大学读的是现代音乐艺术，课程包括芭蕾、现代舞、服装设计等，没有任何数学课程。我高中读的是男子学校，学习了管道工程和汽车维修，只懂得很基础的数学知识。不知是因为我的学科背景，还是习惯于用直觉来思考，当我遇到这样的数学公式时会习惯性地跳过，继续读下面的文字。如果你和我一样，我强烈建议你与这种惰性抗争，试着去理解这些公式。它们虽然看起来很复杂，但还是能够被常人所理解的。
+
+上面的公式除了看起来比较复杂，另一个问题是要获得计算结果必须对数据做多次遍历。好在我们有另外一个公式，能够计算皮尔逊相关系数的近似值：
+
+![](img/chapter-2-30.png)
+
+这个公式虽然看起来更加复杂，而且其计算结果会不太稳定，有一定误差存在，但它最大的优点是，用代码实现的时候可以只遍历一次数据，我们会在下文看到。首先，我们将这个公式做一个分解，计算下面这个表达式的值：
+
+![](img/chapter-2-31.png)
+
+对于Clara和Robert，我们可以得到：
+
+![](img/chapter-2-32.png)
+
+很简单把？下面我们计算这个公式：
+
+![](img/chapter-2-33.png)
+
+Clara的总评分是22.5， Robert是15，他们评价了5支乐队，因此：
+
+![](img/chapter-2-34.png)
+
+所以，那个巨型公式的分子就是70 - 67.5 = 2.5。
+
+下面我们来看分母：
+
+![](img/chapter-2-35.png)
+
+首先：
+
+![](img/chapter-2-36.png)
+
+我们已经计算过Clara的总评分是22.5，它的平方是506.25，除以乐队的数量5，得到101.25。综合得到：
+
+![](img/chapter-2-37.png)
+
+对于Robert，我们用同样的方法计算：
+
+![](img/chapter-2-38.png)
+
+最后得到：
+
+![](img/chapter-2-39.png)
+
+因此，1表示Clara和Robert的偏好完全吻合。
+
+**先休息一下吧**
+
+![](img/chapter-2-40.png)
+
+**计算皮尔逊相关系数的代码**
+
+```python
+from math import sqrt
+
+def pearson(rating1, rating2):
+    sum_xy = 0
+    sum_x = 0
+    sum_y = 0
+    sum_x2 = 0
+    sum_y2 = 0
+    n = 0
+    for key in rating1:
+        if key in rating2:
+            n += 1
+            x = rating1[key]
+            y = rating2[key]
+            sum_xy += x * y
+            sum_x += x
+            sum_y += y
+            sum_x2 += pow(x, 2)
+            sum_y2 += pow(y, 2)
+    # 计算分母
+    denominator = sqrt(sum_x2 - pow(sum_x, 2) / n) * sqrt(sum_y2 - pow(sum_y, 2) / n)
+    if denominator == 0:
+        return 0
+    else:
+        return (sum_xy - (sum_x * sum_y) / n) / denominator
+```
+
+测试一下：
+
+```python
+>>> pearson(users['Angelica'], users['Bill'])
+-0.9040534990682699
+>>> pearson(users['Angelica'], users['Hailey'])
+0.42008402520840293
+>>> pearson(users['Angelica'], users['Jordyn'])
+0.7639748605475432
+```
