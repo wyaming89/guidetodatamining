@@ -561,7 +561,7 @@ Kelsey在我们网站上评价了150首歌曲，其中25首和Jake相同。和Co
 
 ## Python推荐模块
 
-我将本章学到的内容都汇集成了一个Pyhont类，虽然代码有些长，我还是贴在了这里：
+我将本章学到的内容都汇集成了一个Python类，虽然[代码](code/chapter-2/recommender.py)有些长，我还是贴在了这里：
 
 ```python
 import codecs 
@@ -805,3 +805,30 @@ class recommender:
 >>> r.recommend('Hailey')
 [('Phoenix', 5.0), ('Slightly Stoopid', 4.5)]
 ```
+
+### 新的数据集
+
+现在让我们使用一个更为真实的数据集。Cai-Nicolas Zeigler从图书漂流站收集了超过100万条评价数据——278,858位用户为271,379本书打了分。这份数据（匿名）可以从[这个地址](http://www.informatik.uni-freiburg.de/~cziegler/BX/)获得，有SQL和CSV两种格式。由于特殊符号的关系，这些数据无法直接加载到Python里。我做了一些清洗，可以从[这里下载](http://guidetodatamining.com/guide/ch2/BX-Dump.zip)。
+
+CSV文件包含了三张表：
+
+* 用户表，包括用户ID、位置、年龄等信息。其中用户的姓名已经隐去；
+* 书籍表，包括ISBN号、标题、作者、出版日期、出版社等；
+* 评分表，包括用户ID、书籍ISBN号、以及评分（0-10分）。
+
+上文Python代码中的loadBookDB方法可以加载这些数据，用法如下：
+
+```python
+>>> r.loadBookDB('/Users/raz/Downloads/BX-Dump/')
+1700018
+>>> r.recommend('171118')
+```
+
+**注意** 由于数据集比较大，大约需要几十秒的时间加载和查询。
+
+### 项目实践
+
+只有运行调试过书中的代码后才能真正掌握这些方法，以下是一些实践建议：
+
+1. 实现一个计算曼哈顿距离和欧几里得距离的方法；
+2. 本书的网站上有一个包含25部电影评价的[数据集](http://guidetodatamining.com/guide/ch2/Movie_Ratings.csv)，实现一个推荐算法。
