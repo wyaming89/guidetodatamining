@@ -18,11 +18,11 @@
 
 我们将从推荐系统开始，开启数据挖掘之旅。推荐系统无处不在，如亚马逊网站的“看过这件商品的顾客还购买过”板块：
 
-![](img/chapter-2-1.png)
+![](img/chapter-2/chapter-2-1.png)
 
 last.fm上对音乐和演唱会的推荐（相似歌手）：
 
-![](img/chapter-2-2.png)
+![](img/chapter-2/chapter-2-2.png)
 
 在亚马逊的例子里，它用了两个元素来进行推荐：一是我浏览了里维斯翻译的《法华经》一书；二是其他浏览过该书的顾客还浏览过的译作。
 
@@ -32,11 +32,11 @@ last.fm上对音乐和演唱会的推荐（相似歌手）：
 
 所以首先要做的工作是找到相似的用户。这里用最简单的二维模型来描述。假设用户会在网站用五颗星来评价一本书——没有星表示书写得很糟，五颗星表示很好。因为我们用的是二维模型，所以仅对两本书进行评价：史蒂芬森的《雪崩》（纵轴）和拉尔森的《龙纹身的女孩》（横轴）。
 
-![](img/chapter-2-3.png)
+![](img/chapter-2/chapter-2-3.png)
 
 首先，下表显示有三位用户对这两本书做了评价：
 
-![](img/chapter-2-4.png)
+![](img/chapter-2/chapter-2-4.png)
 
 现在我想为神秘的X先生推荐一本书，他给《雪崩》打了四星，《龙纹身的女孩》两星。第一个任务是找出哪个用户和他最为相似。我们用距离来表示。
 
@@ -44,15 +44,15 @@ last.fm上对音乐和演唱会的推荐（相似歌手）：
 
 最简单的距离计算方式是曼哈顿距离。在二维模型中，每个人都可以用(x, y)的点来表示，这里我用下标来表示不同的人，(x<sub>1</sub>, y<sub>1</sub>)表示艾米，(x<sub>2</sub>, y<sub>2</sub>)表示那位神秘的X先生，那么他们之间的曼哈顿距离就是：
 
-![](img/chapter-2-5.png)
+![](img/chapter-2/chapter-2-5.png)
 
 也就是x之差的绝对值加上y之差的绝对值，这样他们的距离就是4。
 
-![](img/chapter-2-6.png)
+![](img/chapter-2/chapter-2-6.png)
 
 完整的计算结果如下：
 
-![](img/chapter-2-7.png)
+![](img/chapter-2/chapter-2-7.png)
 
 艾米的距离最近，在她的浏览历史中可以看到她曾给巴奇加卢比的《发条女孩》打过五星，于是我们就可以把这本书推荐给X先生。
 
@@ -64,49 +64,49 @@ last.fm上对音乐和演唱会的推荐（相似歌手）：
 
 也许你还隐约记得勾股定理。另一种计算距离的方式就是看两点之间的直线距离：
 
-![](img/chapter-2-8.png)
+![](img/chapter-2/chapter-2-8.png)
 
 利用勾股定理，我们可以如下计算距离：
 
-![](img/chapter-2-9.png)
+![](img/chapter-2/chapter-2-9.png)
 
 这条斜线就是欧几里得距离，公式是：
 
-![](img/chapter-2-10.png)
+![](img/chapter-2/chapter-2-10.png)
 
 回顾一下，这里的x<sub>1</sub>表示用户1喜欢《龙纹身》的程度，x<sub>2</sub>是用户2喜欢这本书的程度；y<sub>1</sub>则是用户1喜欢《雪崩》的程度，y<sub>2</sub>是用户2喜欢这本书的程度。
 
 艾米给《龙纹身》和《雪崩》都打了五颗星，神秘的X先生分别打了两星和四星，这样他们之间的欧几里得距离就是：
 
-![](img/chapter-2-11.png)
+![](img/chapter-2/chapter-2-11.png)
 
 以下是全部用户的计算结果：
 
-![](img/chapter-2-12.png)
+![](img/chapter-2/chapter-2-12.png)
 
 ### N维模型
 
 刚才我们仅仅对两本书进行评价（二维模型），下面让我们扩展一下，尝试更复杂的模型。假设我们现在要为一个在线音乐网站的用户推荐乐队。用户可以用1至5星来评价一个乐队，其中包含半星（如2.5星）。下表展示了8位用户对8支乐队的评价：
 
-![](img/chapter-2-13.png)
+![](img/chapter-2/chapter-2-13.png)
 
 表中的短横表示这位用户没有给这支乐队打分。我们在计算两个用户的距离时，只采用他们都评价过的乐队，比如要计算Angelica和Bill的距离，我们只会用到5支乐队。这两个用户的曼哈顿距离为：
 
-![](img/chapter-2-14.png)
+![](img/chapter-2/chapter-2-14.png)
 
 最后距离即是上方数据的加和：(1.5 + 1.5 + 3 + 2 + 1)。
 
 计算欧几里得距离的方法也是类似的，我们也只取双方都评价过的乐队。
 
-![](img/chapter-2-15.png)
+![](img/chapter-2/chapter-2-15.png)
 
 用公式来描述即：
 
-![](img/chapter-2-16.png)
+![](img/chapter-2/chapter-2-16.png)
 
 **掌握了吗？** 那就试试计算其他几个用户之间的距离吧。
 
-![](img/chapter-2-17.png)
+![](img/chapter-2/chapter-2-17.png)
 
 **有个瑕疵**
 
@@ -116,7 +116,7 @@ last.fm上对音乐和演唱会的推荐（相似歌手）：
 
 我们可以将曼哈顿距离和欧几里得距离归纳成一个公式，这个公式称为闵可夫斯基距离：
 
-![](img/chapter-2-18.png)
+![](img/chapter-2/chapter-2-18.png)
 
 其中：
 
@@ -124,25 +124,25 @@ last.fm上对音乐和演唱会的推荐（相似歌手）：
 * `r = 2` 该公式即欧几里得距离
 * `r = ∞` 极大距离
 
-![](img/chapter-2-19.png)
+![](img/chapter-2/chapter-2-19.png)
 
 当你在书中看到这些数学公式，你可以选择快速略过它，继续读下面的文字，过去我就是这样；你也可以停下来，好好分析一下这些公式，会发现其实它们并不难理解。比如上面的公式，当r = 1时，可以简化成如下形式：
 
-![](img/chapter-2-20.png)
+![](img/chapter-2/chapter-2-20.png)
 
 仍用上文的音乐站点为例，x和y分别表示两个用户，d(x, y)表示他们之间的距离，n表示他们共同评价过的乐队数量，我们之前已经做过计算：
 
-![](img/chapter-2-21.png)
+![](img/chapter-2/chapter-2-21.png)
 
 其中Difference一栏表示两者评分之差的绝对值，加起来等于9，也就是他们之间的距离。
 
 当r = 2时，我们得到欧几里得距离的计算公式：
 
-![](img/chapter-2-22.png)
+![](img/chapter-2/chapter-2-22.png)
 
 **提前预告一下：r值越大，单个维度的差值大小会对整体距离有更大的影响。**
 
-![](img/chapter-2-23.png)
+![](img/chapter-2/chapter-2-23.png)
 
 ## 使用Python代码来表示数据（终于要开始编程了）
 
@@ -265,7 +265,7 @@ def recommend(username, users):
 
 Angelica最相似的用户是Veronica，让我们回头看看数据：
 
-![](img/chapter-2-13.png)
+![](img/chapter-2/chapter-2-13.png)
 
 我们可以看到，Veronica评价过的乐队，Angelica也都评价过了，所以我们没有推荐。
 
@@ -296,7 +296,7 @@ distance = minkowski(users[user], users[username], 2)
 
 那么，如何比较这些用户呢？比如Hailey的4分相当于Jordan的4分还是5分呢？我觉得更接近5分。这样一来就会影响到推荐系统的准确性了。
 
-![](img/chapter-2-24.png)
+![](img/chapter-2/chapter-2-24.png)
 
 * 左：我非常喜欢Broken Bells乐队，所以我给他们打4分！
 * 右：Broken Bells乐队还可以，我打4分。
@@ -305,11 +305,11 @@ distance = minkowski(users[user], users[username], 2)
 
 解决方法之一是使用皮尔逊相关系数。简单起见，我们先看下面的数据（和之前的数据不同）：
 
-![](img/chapter-2-25.png)
+![](img/chapter-2/chapter-2-25.png)
 
 这种现象在数据挖掘领域称为“分数膨胀”。Clara最低给了4分——她所有的打分都在4至5分之间。我们将它绘制成图表：
 
-![](img/chapter-2-26.png)
+![](img/chapter-2/chapter-2-26.png)
 
 **一条直线——完全吻合！！！**
 
@@ -317,67 +317,67 @@ distance = minkowski(users[user], users[username], 2)
 
 **意见基本一致的情形**
 
-![](img/chapter-2-27.png)
+![](img/chapter-2/chapter-2-27.png)
 
 **意见不太一致的情形**
 
-![](img/chapter-2-28.png)
+![](img/chapter-2/chapter-2-28.png)
 
 所以从图表上理解，意见相一致表现为一条直线。皮尔逊相关系数用于衡量两个变量之间的相关性（这里的两个变量指的是Clara和Robert），它的值在-1至1之间，1表示完全吻合，-1表示完全相悖。从直观上理解，最开始的那条直线皮尔逊相关系数为1，第二张是0.91，第三张是0.81。因此我们利用这一点来找到相似的用户。
 
 皮尔逊相关系数的计算公式是：
 
-![](img/chapter-2-29.png)
+![](img/chapter-2/chapter-2-29.png)
 
 这里我说说自己的经历。我大学读的是现代音乐艺术，课程包括芭蕾、现代舞、服装设计等，没有任何数学课程。我高中读的是男子学校，学习了管道工程和汽车维修，只懂得很基础的数学知识。不知是因为我的学科背景，还是习惯于用直觉来思考，当我遇到这样的数学公式时会习惯性地跳过，继续读下面的文字。如果你和我一样，我强烈建议你与这种惰性抗争，试着去理解这些公式。它们虽然看起来很复杂，但还是能够被常人所理解的。
 
 上面的公式除了看起来比较复杂，另一个问题是要获得计算结果必须对数据做多次遍历。好在我们有另外一个公式，能够计算皮尔逊相关系数的近似值：
 
-![](img/chapter-2-30.png)
+![](img/chapter-2/chapter-2-30.png)
 
 这个公式虽然看起来更加复杂，而且其计算结果会不太稳定，有一定误差存在，但它最大的优点是，用代码实现的时候可以只遍历一次数据，我们会在下文看到。首先，我们将这个公式做一个分解，计算下面这个表达式的值：
 
-![](img/chapter-2-31.png)
+![](img/chapter-2/chapter-2-31.png)
 
 对于Clara和Robert，我们可以得到：
 
-![](img/chapter-2-32.png)
+![](img/chapter-2/chapter-2-32.png)
 
 很简单把？下面我们计算这个公式：
 
-![](img/chapter-2-33.png)
+![](img/chapter-2/chapter-2-33.png)
 
 Clara的总评分是22.5， Robert是15，他们评价了5支乐队，因此：
 
-![](img/chapter-2-34.png)
+![](img/chapter-2/chapter-2-34.png)
 
 所以，那个巨型公式的分子就是70 - 67.5 = 2.5。
 
 下面我们来看分母：
 
-![](img/chapter-2-35.png)
+![](img/chapter-2/chapter-2-35.png)
 
 首先：
 
-![](img/chapter-2-36.png)
+![](img/chapter-2/chapter-2-36.png)
 
 我们已经计算过Clara的总评分是22.5，它的平方是506.25，除以乐队的数量5，得到101.25。综合得到：
 
-![](img/chapter-2-37.png)
+![](img/chapter-2/chapter-2-37.png)
 
 对于Robert，我们用同样的方法计算：
 
-![](img/chapter-2-38.png)
+![](img/chapter-2/chapter-2-38.png)
 
 最后得到：
 
-![](img/chapter-2-39.png)
+![](img/chapter-2/chapter-2-39.png)
 
 因此，1表示Clara和Robert的偏好完全吻合。
 
 **先休息一下吧**
 
-![](img/chapter-2-40.png)
+![](img/chapter-2/chapter-2-40.png)
 
 **计算皮尔逊相关系数的代码**
 
@@ -424,7 +424,7 @@ def pearson(rating1, rating2):
 
 这里我将奉上最后一个公式：余弦相似度。它在文本挖掘中应用得较多，在协同过滤中也会使用到。为了演示如何使用该公式，我们换一个示例。这里记录了每个用户播放歌曲的次数，我们用这些数据进行推荐：
 
-![](img/chapter-2-41.png)
+![](img/chapter-2/chapter-2-41.png)
 
 简单扫一眼上面的数据（或者用之前讲过的距离计算公式），我们可以发现Ann的偏好和Sally更为相似。
 
@@ -432,41 +432,41 @@ def pearson(rating1, rating2):
 
 我在iTunes上有大约4000首歌曲，下面是我最常听的音乐：
 
-![](img/chapter-2-42.png)
+![](img/chapter-2/chapter-2-42.png)
 
 可以看到，Moonlight Sonata这首歌我播放了25次，但很有可能你一次都没有听过。事实上，上面列出的这些歌曲可能你一首都没听过。此外，iTunes上有1500万首音乐，而我只听过4000首。所以说单个用户的数据是 *稀疏* 的，因为非零值较总体要少得多。当我们用1500万首歌曲来比较两个用户时，很有可能他们之间没有任何交集，这样一来就无从计算他们之间的距离了。
 
-![](img/chapter-2-43.png)
+![](img/chapter-2/chapter-2-43.png)
 
 类似的情况是在计算两篇文章的相似度时。比如说我们想找一本和《The Space Pioneers》相类似的书，方法之一是利用单词出现的频率，即统计每个单词在书中出现的次数占全书单词的比例，如“the”出现频率为6.13%，“Tom” 0.89%，“space” 0.25%。我们可以用这些数据来寻找一本相近的书。但是，这里同样有数据的稀疏性问题。《The Space Pioneers》中有6629个不同的单词，但英语语言中有超过100万个单词，这样一来非零值就很稀少了，也就不能计算两本书之间的距离。
 
 余弦相似度的计算中会略过这些非零值。它的计算公式是：
 
-![](img/chapter-2-44.png)
+![](img/chapter-2/chapter-2-44.png)
 
 其中，“·”号表示数量积。“||x||”表示向量x的模，计算公式是：
 
-![](img/chapter-2-45.png)
+![](img/chapter-2/chapter-2-45.png)
 
 我们用上文中“偏好完全一致”的示例：
 
-![](img/chapter-2-25.png)
+![](img/chapter-2/chapter-2-25.png)
 
 所以两个向量为：
 
-![](img/chapter-2-46.png)
+![](img/chapter-2/chapter-2-46.png)
 
 它们的模是：
 
-![](img/chapter-2-47.png)
+![](img/chapter-2/chapter-2-47.png)
 
 数量积的计算：
 
-![](img/chapter-2-48.png)
+![](img/chapter-2/chapter-2-48.png)
 
 因此余弦相似度是：
 
-![](img/chapter-2-49.png)
+![](img/chapter-2/chapter-2-49.png)
 
 余弦相似度的范围从1到-1，1表示完全匹配，-1表示完全相悖。所以0.935表示匹配度很高。
 
@@ -476,7 +476,7 @@ def pearson(rating1, rating2):
 
 我们整本书都会探索这个问题，以下是一些提示：
 
-![](img/chapter-2-50.png)
+![](img/chapter-2/chapter-2-50.png)
 
 * 如果数据存在“分数膨胀”问题，就使用皮尔逊相关系数。
 * 如果数据比较“密集”，变量之间基本都存在公有值，且这些距离数据是非常重要的，那就使用欧几里得或曼哈顿距离。
@@ -484,28 +484,28 @@ def pearson(rating1, rating2):
 
 所以，如果数据是密集的，曼哈顿距离和欧几里得距离都是适用的。那么稀疏的数据可以使用吗？我们来看一个也和音乐有关的示例：假设有三个人，每人都给100首音乐评过分。
 
-![](img/chapter-2-51.png)
+![](img/chapter-2/chapter-2-51.png)
 
 * Jake（左）：乡村音乐的忠实听众。
 * Linda和Eric（右）：我们爱六十年代的摇滚乐！
 
 Linda和Eric喜欢相同的音乐，他们的评分列表中有20首相同的的歌曲，且评分均值相差不到0.5！所以他们之间的曼哈顿距离为20 x 0.5 = 10，欧几里得距离则为：
 
-![](img/chapter-2-52.png)
+![](img/chapter-2/chapter-2-52.png)
 
 Linda和Jake只共同评分了一首歌曲：Chris Cagle的 *What a Beautiful Day* 。Linda打了3分，Jake打了5分，所以他们之间的曼哈顿距离为2，欧几里得距离为：
 
-![](img/chapter-2-53.png)
+![](img/chapter-2/chapter-2-53.png)
 
 所以不管是曼哈顿距离还是欧几里得距离，Jake都要比Eric离Linda近，这不符合实际情况。
 
-![](img/chapter-2-54.png)
+![](img/chapter-2/chapter-2-54.png)
 
 > 嘿，我想到一个办法。人们给音乐打分是从1到5分，那些没有打分的音乐就统一给0分好了，这样就能解决数据稀疏的问题了！
 
 想法不错，但是这样做也不行。为了解释这一问题，我们再引入两个人到例子里来：Cooper和Kelsey。他们和Jake都有着非常相似的音乐偏好，其中Jake在我们网站上评价了25首歌曲。
 
-![](img/chapter-2-55.png)
+![](img/chapter-2/chapter-2-55.png)
 
 Cooper评价了26首歌曲，其中25首和Jake是一样的。他们对每首歌曲的评价差值只有0.25！
 
@@ -517,11 +517,11 @@ Kelsey在我们网站上评价了150首歌曲，其中25首和Jake相同。和Co
 
 我们来看下面的数据：
 
-![](img/chapter-2-56.png)
+![](img/chapter-2/chapter-2-56.png)
 
 从4、5、6这三首歌来看，两人离Jake的距离是相同的，但计算出的曼哈顿距离却不这么显示：
 
-![](img/chapter-2-57.png)
+![](img/chapter-2/chapter-2-57.png)
 
 问题就在于数据中的0值对结果的影响很大，所以用0代替空值的方法并不比原来的方程好。还有一种变通的方式是计算“平均值”——将两人共同评价过的歌曲分数除以歌曲数量。
 
@@ -531,11 +531,11 @@ Kelsey在我们网站上评价了150首歌曲，其中25首和Jake相同。和Co
 
 假设我们要为Amy推荐乐队，她喜欢Phoenix、Passion Pit、以及Vampire Weekend。和她最相似的用户是Bob，他也喜欢这三支乐队。他的父亲为Walter Ostanek乐队演奏手风琴，所以受此影响，他给了这支乐队5星评价。按照我们现在的推荐逻辑，我们会将这支乐队推荐给Amy，但有可能她并不喜欢。
 
-![](img/chapter-2-58.png)
+![](img/chapter-2/chapter-2-58.png)
 
 或者试想一下，Billy Bob Olivera教授喜欢阅读数据挖掘方面的书籍以及科幻小说，他最邻近的用户是我，因为我也喜欢这两种书。然而，我又是一个贵宾犬的爱好者，所以给《贵宾犬的隐秘生活》这本书打了很高的分。这样一来，现有的推荐方法会将这本书介绍给Olivera教授。
 
-![](img/chapter-2-59.png)
+![](img/chapter-2/chapter-2-59.png)
 
 问题就在于我们只依靠最相似的 **一个** 用户来做推荐，如果这个用户有些特殊的偏好，就会直接反映在推荐内容里。解决方法之一是找寻多个相似的用户，这里就要用到K最邻近算法了。
 
@@ -545,19 +545,19 @@ Kelsey在我们网站上评价了150首歌曲，其中25首和Jake相同。和Co
 
 假设我要为Ann做推荐，并令K=3。使用皮尔逊相关系数得到的结果是：
 
-![](img/chapter-2-60.png)
+![](img/chapter-2/chapter-2-60.png)
 
 这三个人都会对推荐结果有所贡献，问题在于我们如何确定他们的比重呢？我们直接用相关系数的比重来描述，Sally的比重是0.8/2=40%，Eric是0.7/2=35%，Amanda则是25%：
 
-![](img/chapter-2-61.png)
+![](img/chapter-2/chapter-2-61.png)
 
 假设他们三人对Grey Wardens的评分以及加权后的结果如下：
 
-![](img/chapter-2-62.png)
+![](img/chapter-2/chapter-2-62.png)
 
 最后计算得到的分数为：
 
-![](img/chapter-2-63.png)
+![](img/chapter-2/chapter-2-63.png)
 
 ## Python推荐模块
 
