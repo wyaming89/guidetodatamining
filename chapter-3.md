@@ -147,3 +147,81 @@
 > 基于用户的协同过滤又称为内存型协同过滤，因为我们需要将所有的评价数据都保存在内存中来进行推荐。
 
 > 基于物品的协同过滤也称为基于模型的协同过滤，因为我们不需要保存所有的评价数据，而是通过构建一个物品相似度模型来做推荐。
+
+## 修正的余弦相似度
+
+我们使用余弦相似度来计算两个物品的距离。我们在第二章中提过“分数膨胀”现象，因此我们会从用户的评价中减去他所有评价的均值，这就是修正的余弦相似度。
+
+![](img/chapter-3/chapter-3-15.png)
+
+> 左：我喜欢Phoenix乐队，因此给他们打了5分。我不喜欢Passion，所以给了3分。
+
+> 右：Phoenix很棒，我给4分。Passion Pit太糟糕了，必须给0分！
+
+![](img/chapter-3/chapter-3-16.png)
+
+*U表示同时评价过物品i和j的用户集合*
+
+这个公式来自于一篇影响深远的论文《[基于物品的协同过滤算法](http://www.grouplens.org/papers/pdf/www10_sarwar.pdf)》，由Badrul Sarwar等人合著。
+
+![](img/chapter-3/chapter-3-17.png)
+
+上式表示将用户u对物品i的评价值减去用户u对所有物品的评价均值，从而得到修正后的评分。s(i,j)表示物品i和j的相似度，分子表示将同时评价过物品i和j的用户的修正评分相乘并求和，分母则是对所有的物品的修正评分做一些汇总处理。
+
+为了更好地演示修正的余弦相似度，我们举一个例子。下表是五个学生对五位歌手的评价：
+
+![](img/chapter-3/chapter-3-18.png)
+
+首先，我们计算出每个用户的平均评分，这很简单：
+
+![](img/chapter-3/chapter-3-19.png)
+
+下面，我们计算歌手之间的相似度，从Kacey Musgraves和Imagine Dragons开始。上图中我已经标出了同时评价过这两个歌手的用户，代入到公式中：
+
+![](img/chapter-3/chapter-3-20.png)
+
+所以这两个歌手之间的修正余弦相似度为0.5260，我计算了其他一些歌手之间的相似度，其余的请读者们完成：
+
+![](img/chapter-3/chapter-3-21.png)
+
+### 计算修正余弦相似度的Python代码
+
+```python
+# -*- coding: utf-8 -*-
+
+from math import sqrt
+
+users3 = {"David": {"Imagine Dragons": 3, "Daft Punk": 5,
+                    "Lorde": 4, "Fall Out Boy": 1},
+          "Matt": {"Imagine Dragons": 3, "Daft Punk": 4,
+                   "Lorde": 4, "Fall Out Boy": 1},
+          "Ben": {"Kacey Musgraves": 4, "Imagine Dragons": 3,
+                  "Lorde": 3, "Fall Out Boy": 1},
+          "Chris": {"Kacey Musgraves": 4, "Imagine Dragons": 4,
+                    "Daft Punk": 4, "Lorde": 3, "Fall Out Boy": 1},
+          "Tori": {"Kacey Musgraves": 5, "Imagine Dragons": 4,
+                   "Daft Punk": 5, "Fall Out Boy": 3}}
+
+
+def computeSimilarity(band1, band2, userRatings):
+    averages = {}
+    for (key, ratings) in userRatings.items():
+        averages[key] = (float(sum(ratings.values())) / len(ratings.values()))
+    
+    num = 0 # 分子
+    dem1 = 0 # 分母的第一部分
+    dem2 = 0
+    for (user, ratings) in userRatings.items():
+        if band1 in ratings and band2 in ratings:
+            avg = averages[user]
+            num += (ratings[band1] - avg) * (ratings[band2] - avg)
+            dem1 += (ratings[band1] - avg) ** 2
+            dem2 += (ratings[band2] - avg) ** 2
+    return num / (sqrt(dem1) * sqrt(dem2))
+
+print computeSimilarity('Kacey Musgraves', 'Lorde', users3)
+print computeSimilarity('Imagine Dragons', 'Lorde', users3)
+print computeSimilarity('Daft Punk', 'Lorde', users3)
+```
+
+![](img/chapter-3/chapter-3-22.png)
