@@ -225,3 +225,11 @@ print computeSimilarity('Daft Punk', 'Lorde', users3)
 ```
 
 ![](img/chapter-3/chapter-3-22.png)
+
+![](img/chapter-3/chapter-3-23.png)
+
+> 这个矩阵看起来不错，那下面该如何使用它来做预测呢？比如我想知道David有多喜欢Kacey Musgraves？
+
+![](img/chapter-3/chapter-3-24.png)
+
+p(u,i)表示我们会来预测用户u对物品i的评分。
