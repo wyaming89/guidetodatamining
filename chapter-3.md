@@ -232,4 +232,28 @@ print computeSimilarity('Daft Punk', 'Lorde', users3)
 
 ![](img/chapter-3/chapter-3-24.png)
 
-p(u,i)表示我们会来预测用户u对物品i的评分。
+p(u,i)表示我们会来预测用户u对物品i的评分，所以p(David, Kacey Musgraves)就表示我们将预测David会给Kacey打多少分。
+
+N是一个物品的集合，有如下特性：用户u对集合中的物品打过分；物品i和集合中的物品有相似度数据（即上文中的矩阵）。
+
+S<sub>i,N</sub>表示物品i和N的相似度，R<sub>u,N</sub>表示用户u对物品N的评分。
+
+为了让公式的计算效果更佳，对物品的评价分值最好介于-1和1之间。由于我们的评分系统是1至5星，所以需要使用一些运算将其转换到-1至1之间。
+
+![](img/chapter-3/chapter-3-25.png)
+
+我们的音乐评分系统是5分制，Max<sub>R</sub>表示评分系统中的最高分（这里是5），Min<sub>R</sub>为最低分（这里是1），R<sub>u,N</sub>是用户u对物品N的评分，NR<sub>u,N</sub>则表示修正后的评分（即范围在-1和1之间）。
+
+若已知NR<sub>u,N</sub>，求解R<sub>u,N</sub>的公式为：
+
+![](img/chapter-3/chapter-3-26.png)
+
+比如一位用户给Fall Out Boy打了2分，那修正后的评分为：
+
+![](img/chapter-3/chapter-3-27.png)
+
+反过来则是：
+
+![](img/chapter-3/chapter-3-28.png)
+
+有了这个基础后，下面就让我们看看如何求解上文中的p(David, Kacey Musgraves)。
