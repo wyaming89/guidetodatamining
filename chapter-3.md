@@ -356,7 +356,7 @@ P<sup>WS1</sup>(u)<sub>j</sub>表示我们将预测用户u对物品i的评分。
 7. Whitney Houston和PSY的差异是0.75
 8. dev<sub>j,i</sub> + u<sub>i</sub> = 2.75
 9. 有两个用户同时评价了这两位歌手，因此(dev<sub>j,i</sub> + u<sub>i</sub>) c<sub>j,i</sub> = 2.75 × 2 = 5.5
-10. 8 + 5.5 = 13.5
+10. 分子：8 + 5.5 = 13.5
 11. 分母：2 + 2 = 4
 12. 预测评分：13.5 ÷ 4 = 3.375
 
