@@ -70,7 +70,7 @@
 我们先来构建一个数据集，我选取了以下这些特征（可能比较随意），使用5分制来评分（0.5分一档）：
 
 * 使用钢琴的程度（Piano）：1分表示没有使用钢琴，5分表示整首歌曲由钢琴曲贯穿；
-* 使用声乐的程度（Vocals）：标准同上
+* 使用美声的程度（Vocals）：标准同上
 * 节奏（Driving beat）：整首歌曲是否有强烈的节奏感
 * 蓝调（Blues infl.）
 * 电音吉他（Dirty elec. Guitar）
@@ -118,6 +118,18 @@ music = {"Dr Dog/Fate": {"piano": 2.5, "vocals": 4, "beat": 3.5, "blues": 3, "gu
 [(4.5, 'Heartless Bastards/Out at Sea'), (5.5, 'Phoenix/Lisztomania'), (6.5, 'Dr Dog/Fate'), (8.0, "Glee Cast/Jessie's Girl"), (9.0, 'Mike Posner'), (9.5, 'Lady Gaga/Alejandro'), (11.5, 'Black Eyed Peas/Rock That Body'), (11.5, 'La Roux/Bulletproof'), (13.5, "Todd Snider/Don't Tempt Me")]
 ```
 
-这里我推荐的是Heartless Bastard的Out as Sea，还是很合乎逻辑的。
+这里我推荐的是Heartless Bastard的Out as Sea，还是很合乎逻辑的。当然，由于我们的数据集比较小，特征和歌曲都不够丰富，因此有些推荐结果并不太好。
 
-这段代码可以[点此获取](code/chapter-4/filteringdata.py)。
+这段代码可以[点此浏览](code/chapter-4/filteringdata.py)。
+
+### 如何显示“推荐理由”？
+
+潘多拉在推荐歌曲时会显示推荐理由，我们也可以做到这一点。比如在上面的例子中，我们可以将Magic Potion和Out at Sea的音乐特征做一个比较，找出高度相符的点：
+
+![](img/chapter-4/chapter-4-10.png)
+
+可以看到，两首歌曲最相似的地方是钢琴、和声、以及饶舌，这些特征的差异都是0。但是，这些特征的评分都很低，我们不能告诉用户“因为这首歌曲没有钢琴伴奏，所以我们推荐给你”。因此，我们需要使用那些相似的且评分较高的特征。
+
+![](img/chapter-4/chapter-4-11.png)
+
+**我们推荐歌曲是因为它有着强烈的节奏感，美声片段，以及电音吉他的演奏。**
