@@ -167,3 +167,51 @@ music = {"Dr Dog/Fate": {"piano": 2.5, "vocals": 4, "beat": 3.5, "blues": 3, "gu
 对一些数据集，这种简单的方法效果是不错的。
 
 ![](img/chapter-4/chapter-4-17.png)
+
+如果你学过统计学，会知道还有其他的标准化方法。比如说标准分（z-score）——分值偏离均值的程度：
+
+![](img/chapter-4/chapter-4-18.png)
+
+标准差的计算公式是：
+
+![](img/chapter-4/chapter-4-19.png)
+
+card(x)表示集合x中的元素个数。
+
+> 如果你对统计学有兴趣，可以读一读《[漫话统计学](http://www.amazon.com/Manga-Guide-Statistics-Shin-Takahashi/dp/1593271891)》。
+
+我们用上文中交友网站的数据举例。所有人薪水的总和是577,000，一共有8人，所以均值为72,125。代入标准差的计算公式：
+
+![](img/chapter-4/chapter-4-20.png)
+
+那Yun的标准分则是：
+
+![](img/chapter-4/chapter-4-21.png)
+
+**练习题：计算Allie、Daniela、Rita的标准分**
+
+![](img/chapter-4/chapter-4-22.png)
+
+### 标准分带来的问题
+
+标准分的问题在于它会受异常值的影响。比如说一家公司有100名员工，普通员工每小时赚10美元，而CEO一年能赚600万，那全公司的平均时薪为：
+
+![](img/chapter-4/chapter-4-23.png)
+
+结果是每小时38美元，看起来很美好，但其实并不真实。鉴于这个原因，标准分的计算公式会稍作变化。
+
+### 修正的标准分
+
+计算方法：将标准分公式中的均值改为中位数，将标准差改为绝对偏差。以下是绝对偏差的计算公式：
+
+![](img/chapter-4/chapter-4-24.png)
+
+中位数指的是将所有数据进行排序，取中间的那个值。如果数据量是偶数，则取中间两个数值的均值。
+
+下面就让我们试试吧。首先将所有人按薪水排序，找到中位数，然后计算绝对偏差：
+
+![](img/chapter-4/chapter-4-25.png)
+
+最后，我们便可以计算得出Yun的修正标准分：
+
+![](img/chapter-4/chapter-4-26.png)
