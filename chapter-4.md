@@ -236,3 +236,55 @@ card(x)表示集合x中的元素个数。
 ![](img/chapter-4/chapter-4-28.png)
 
 在潘多拉的例子中，如果所有的音乐特征都是在1到5分之间浮动的，是否还需要标准化呢？虽然即使做了也不会影响计算结果，但是任何运算都是有性能消耗的，这时我们可以通过比较两种方式的性能和效果来做进一步选择。在下文中，我们会看到标准化反而会降低结果正确性的示例。
+
+
+## 回到潘多拉
+
+在潘多拉网站的示例中，我们用一个特征向量来表示一首歌曲，用以计算歌曲的相似度。潘多拉网站同样允许用户对歌曲“赞”和“踩”，那我们要如何利用这些数据呢？
+
+假设我们的歌曲有两个特征，重金属吉他（Dirty Guitar）和强烈的节奏感（Driving Beat），两种特征都在1到5分之间。一位用户对5首歌曲做了“赞”的操作（图中的L），另外五首则“踩”了一下（图中的D）：
+
+![](img/chapter-4/chapter-4-29.png)
+
+图中多了一个问号所表示的歌曲，你觉得用户会喜欢它还是不喜欢呢？想必你也猜到了，因为这个问号离用户喜欢的歌曲距离较近。这一章接下来的篇幅都会用来讲述这种计算方法。最明显的方式是找到问号歌曲最邻近的歌曲，因为它们之间相似度比较高，再根据用户是否喜欢这些邻近歌曲来判断他对问号歌曲的喜好。
+
+### 使用Python实现最邻近分类算法
+
+我们仍使用上文中的歌曲示例，用7个特征来标识10首歌曲：
+
+![](img/chapter-4/chapter-4-8.png)
+
+使用Python代码来表示这些数据：
+
+```python
+music = {"Dr Dog/Fate": {"piano": 2.5, "vocals": 4, "beat": 3.5, "blues": 3, "guitar": 5, "backup vocals": 4, "rap": 1},
+         "Phoenix/Lisztomania": {"piano": 2, "vocals": 5, "beat": 5, "blues": 3, "guitar": 2, "backup vocals": 1, "rap": 1},
+         "Heartless Bastards/Out at Sea": {"piano": 1, "vocals": 5, "beat": 4, "blues": 2, "guitar": 4, "backup vocals": 1, "rap": 1},
+         "Todd Snider/Don't Tempt Me": {"piano": 4, "vocals": 5, "beat": 4, "blues": 4, "guitar": 1, "backup vocals": 5, "rap": 1},
+         "The Black Keys/Magic Potion": {"piano": 1, "vocals": 4, "beat": 5, "blues": 3.5, "guitar": 5, "backup vocals": 1, "rap": 1},
+         "Glee Cast/Jessie's Girl": {"piano": 1, "vocals": 5, "beat": 3.5, "blues": 3, "guitar":4, "backup vocals": 5, "rap": 1},
+         "La Roux/Bulletproof": {"piano": 5, "vocals": 5, "beat": 4, "blues": 2, "guitar": 1, "backup vocals": 1, "rap": 1},
+         "Mike Posner": {"piano": 2.5, "vocals": 4, "beat": 4, "blues": 1, "guitar": 1, "backup vocals": 1, "rap": 1},
+         "Black Eyed Peas/Rock That Body": {"piano": 2, "vocals": 5, "beat": 5, "blues": 1, "guitar": 2, "backup vocals": 2, "rap": 4},
+         "Lady Gaga/Alejandro": {"piano": 1, "vocals": 5, "beat": 3, "blues": 2, "guitar": 1, "backup vocals": 2, "rap": 1}}
+```
+
+这样做虽然可行，但却比较繁琐，piano、vocals这样的键名需要重复很多次。我们可以将其简化为向量，即Python中的数组类型：
+
+```python
+#
+# 物品向量中的特征依次为：piano, vocals, beat, blues, guitar, backup vocals, rap
+#
+items = {"Dr Dog/Fate": [2.5, 4, 3.5, 3, 5, 4, 1],
+         "Phoenix/Lisztomania": [2, 5, 5, 3, 2, 1, 1],
+         "Heartless Bastards/Out": [1, 5, 4, 2, 4, 1, 1],
+         "Todd Snider/Don't Tempt Me": [4, 5, 4, 4, 1, 5, 1],
+         "The Black Keys/Magic Potion": [1, 4, 5, 3.5, 5, 1, 1],
+         "Glee Cast/Jessie's Girl": [1, 5, 3.5, 3, 4, 5, 1],
+         "La Roux/Bulletproof": [5, 5, 4, 2, 1, 1, 1],
+         "Mike Posner": [2.5, 4, 4, 1, 1, 1, 1],
+         "Black Eyed Peas/Rock That Body": [2, 5, 5, 1, 2, 2, 4],
+         "Lady Gaga/Alejandro": [1, 5, 3, 2, 1, 2, 1]}
+```
+
+![](img/chapter-4/chapter-4-30.png)
