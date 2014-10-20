@@ -288,3 +288,90 @@ items = {"Dr Dog/Fate": [2.5, 4, 3.5, 3, 5, 4, 1],
 ```
 
 ![](img/chapter-4/chapter-4-30.png)
+
+接下来我还需要将用户“赞”和“踩”的数据也用Python代码表示出来。由于用户并不会对所有的歌曲都做这些操作，所以我用嵌套的字典来表示：
+
+```python
+users = {"Angelica": {"Dr Dog/Fate": "L",
+                      "Phoenix/Lisztomania": "L",
+                      "Heartless Bastards/Out at Sea": "D",
+                      "Todd Snider/Don't Tempt Me": "D",
+                      "The Black Keys/Magic Potion": "D",
+                      "Glee Cast/Jessie's Girl": "L",
+                      "La Roux/Bulletproof": "D",
+                      "Mike Posner": "D",
+                      "Black Eyed Peas/Rock That Body": "D",
+                      "Lady Gaga/Alejandro": "L"},
+         "Bill": {"Dr Dog/Fate": "L",
+                  "Phoenix/Lisztomania": "L",
+                  "Heartless Bastards/Out at Sea": "L",
+                  "Todd Snider/Don't Tempt Me": "D",
+                  "The Black Keys/Magic Potion": "L",
+                  "Glee Cast/Jessie's Girl": "D",
+                  "La Roux/Bulletproof": "D",
+                  "Mike Posner": "D",
+                  "Black Eyed Peas/Rock That Body": "D",
+                  "Lady Gaga/Alejandro": "D"}}
+```
+
+这里使用L和D两个字母来表示喜欢和不喜欢，当然你也可以用其他方式，比如0和1等。
+
+对于新的向量格式，我们需要对曼哈顿距离函数和邻近物品函数做一些调整：
+
+```python
+def manhattan(vector1, vector2):
+    distance = 0
+    total = 0
+    n = len(vector1)
+    for i in range(n):
+        distance += abs(vector1[i] - vector2[i])
+    return distance
+    
+def computeNearestNeighbor(itemName, itemVector, items):
+    """按照距离排序，返回邻近物品列表"""
+    distances = []
+    for otherItem in items:
+        if otherItem != itemName:
+            distance = manhattan(itemVector, items[otherItem])
+            distances.append((distance, otherItem))
+    # 最近的排在前面
+    distances.sort()
+    return distances
+```
+
+最后，我需要建立一个分类函数，用来预测用户对一个新物品的喜好，如：
+
+```
+"Chris Cagle/I Breathe In. I Breathe Out" [1, 5, 2.5, 1, 1, 5, 1]
+```
+
+这个函数会先计算出与这个物品距离最近的物品，然后找到用户对这个最近物品的评价，以此作为新物品的预测值。下面是一个最简单的分类函数：
+
+```python
+def classify(user, itemName, itemVector):
+    nearest = computeNearestNeighbor(itemName, itemVector, items)[0][1]
+    rating = users[user][nearest]
+    return rating
+````
+
+让我们试用一下：
+
+```python
+>>> classify('Angelica', 'Chris Cagle/I Breathe In. I Breathe Out', [1, 5, 2.5, 1, 1, 5, 1])
+'L'
+```
+
+我们认为她会喜欢这首歌曲！为什么呢？
+
+```python
+>>> computeNearestNeighbor('Chris Cagle/I Breathe In. I Breathe Out', [1, 5, 2.5, 1, 1, 5, 1], items)
+[(4.5, 'Lady Gaga/Alejandro'), (6.0, "Glee Cast/Jessie's Girl"), (7.5, "Todd Snider/Don't Tempt Me"), (8.0, 'Mike Posner'), (9.5, 'Heartless Bastards/Out'), (10.5, 'Black Eyed Peas/Rock That Body'), (10.5, 'Dr Dog/Fate'), (10.5, 'La Roux/Bulletproof'), (10.5, 'Phoenix/Lisztomania'), (14.0, 'The Black Keys/Magic Potion')]
+```
+
+可以看到，距离I Breathe In最近的歌曲是Alejandro，并且Angelica是喜欢这首歌曲的，所以我们预测她也会喜欢I Breathe In。
+
+其实我们做的是一个分类器，将歌曲分为了用户喜欢和不喜欢两个类别。
+
+**号外，号外！我们编写了一个分类器！**
+
+![](img/chapter-4/chapter-4-31.png)
