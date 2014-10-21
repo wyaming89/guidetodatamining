@@ -375,3 +375,12 @@ def classify(user, itemName, itemVector):
 **号外，号外！我们编写了一个分类器！**
 
 ![](img/chapter-4/chapter-4-31.png)
+
+**分类器是指通过物品特征来判断它应该属于哪个组或类别的程序！**
+
+分类器程序会基于一组已经做过分类的物品进行学习，从而判断新物品的所属类别。在上面的例子中，我们知道Angelica喜欢和不喜欢的歌曲，然后据此判断她是否会喜欢Chris Cagle的歌。
+
+1. 在Angelica评价过的歌曲中找到距离Chris Cagle最近的歌曲，即Laydy Gaga的Alejandro；
+2. 由于Angelica是喜欢Alejandro这首歌的，所以我们预测她也会喜欢Chris Cagle的Breathe In, Breathe Out。
+
+分类器的应用范围很广，以下是一些示例：
