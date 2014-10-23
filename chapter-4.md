@@ -443,3 +443,80 @@ Candace Parker是篮球运动员，McKayla Maroney是美国女子体操队的一
 下表是我们需要进行预测的运动员列表，一起来做分类器吧！
 
 ![](img/chapter-4/chapter-4-34.png)
+
+## Python编码
+
+这次我们不将数据直接写在Python代码中，而是放到两个文本文件里：athletesTrainingSet.txt和athletesTestSet.txt。我会使用第一个文件中的数据来训练分类器，然后使用测试文件里的数据来进行评价。
+
+文件格式大致如下：
+
+![](img/chapter-4/chapter-4-35.png)
+
+文件中的每一行是一条完整的记录，字段使用制表符分隔。我要使用运动员的身高体重数据来预测她所从事的运动项目，也就是用第三、四列的数据来预测第二列的数据。运动员的姓名不会使用到，我们既不能通过运动员的姓名得知她参与的项目，也不会通过身高体重来预测运动员的姓名。
+
+![](img/chapter-4/chapter-4-36.png)
+
+> 你好，你有五英尺高，150磅重，莫非你的名字是Clara Coleman？
+
+当然，名字也有它的用处，我们可以用它来解释分类器的预测结果：“我们认为Amelia Pond是一名体操运动员，因为她的身高体重和另一名体操运动员Gabby Douglas很接近。”
+
+为了让我们的Python代码更具一般性，并不只适用于这一种数据集，我会为每一列数据增加一个列名，如：
+
+![](img/chapter-4/chapter-4-37.png)
+
+所有被标记为comment的列都会被分类器忽略；标记为class的列表示物品所属分类；不定个数的num列则表示物品的特征。
+
+**头脑风暴**
+
+我们在Python中应该如何表示这些数据呢？以下是一些可能性：
+
+```python
+# 1
+{'Asuka Termoto': ('Gymnastics', [54, 66]),
+ 'Brittainey Raven': ('Basketball', [72, 162]), ...
+```
+
+这种方式使用了运动员的姓名作为键，而我们说过分类器程序根本不会使用到姓名，所以不合理。
+
+```python
+# 2
+[['Asuka Termoto', 'Gymnastics', 54, 66],
+ ['Brittainey Raven', 'Basketball', 72, 162], ...
+```
+
+这种方式看起来不错，它直接反映了文件的格式。由于我们需要遍历文件的数据，所以使用列表类型（list）是合理的。
+
+```python
+# 3
+[('Gymnastics', [54, 66], ['Asuka Termoto']),
+ ('Basketball', [72, 162], ['Brittainey Raven']), ...
+```
+
+这是我最认同的表示方式，因为它将不同类型的数据区别开来了，依次是分类、特征、备注。这里备注可能有多个，所以也用了一个列表来表示。以下是读取数据文件并转换成上述格式的函数：
+
+```python
+class Classifier:
+
+    def __init__(self, filename):
+
+        self.medianAndDeviation = []
+        
+        # 读取文件
+        f = open(filename)
+        lines = f.readlines()
+        f.close()
+        self.format = lines[0].strip().split('\t')
+        self.data = []
+        for line in lines[1:]:
+            fields = line.strip().split('\t')
+            ignore = []
+            vector = []
+            for i in range(len(fields)):
+                if self.format[i] == 'num':
+                    vector.append(int(fields[i]))
+                elif self.format[i] == 'comment':
+                    ignore.append(fields[i])
+                elif self.format[i] == 'class':
+                    classification = fields[i]
+            self.data.append((classification, vector, ignore))
+```
