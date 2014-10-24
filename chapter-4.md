@@ -520,3 +520,96 @@ class Classifier:
                     classification = fields[i]
             self.data.append((classification, vector, ignore))
 ```
+
+**动手实践**
+
+在计算修正的标准分之前，我们需要编写获取中位数和计算绝对偏差的函数，尝试实现这两个函数：
+
+```python
+>>> heights = [54, 72, 78, 49, 65, 63, 75, 67, 54]
+>>> median = classifier.getMedian(heights)
+>>> median
+65
+>>> asd = classifier.getAbsoluteStandardDeviation(heights, median)
+>>> asd
+8.0
+```
+
+### 关于断言
+
+通常我们会将一个大的算法拆分成几个小的组件，并为每个组件编写一些单元测试，从而确保它能正常工作。很多时候，我们会先写单元测试，再写正式的代码。在我提供的[模板代码](code/chapter-4/testMedianAndASD.py)中已经编写了一些单元测试，摘录如下：
+
+```python
+def unitTest():
+    list1 = [54, 72, 78, 49, 65, 63, 75, 67, 54]
+    classifier = Classifier('athletesTrainingSet.txt')
+    m1 = classifier.getMedian(list1)
+    assert(round(m1, 3) == 65)
+    ...
+    print("getMedian和getAbsoluteStandardDeviation均能正常工作")
+```
+
+你需要完成的geMedian函数的模板是：
+
+```python
+def getMedian(self, alist):
+    """返回中位数"""
+    
+    """请在此处编写代码"""
+    return 0
+```
+
+这个模板函数返回的是0，你需要编写代码来返回列表的中位数。比如单元测试中我传入了以下列表：
+
+```python
+[54, 72, 78, 49, 65, 63, 75, 67, 54]
+```
+
+assert（断言）表示函数的返回值应该是65。如果所有的单元测试都能通过，则报告以下信息：
+
+```
+getMedian和getAbsoluteStandardDeviation均能正常工作
+```
+
+否则，则抛出以下异常：
+
+```
+File "testMedianAndASD.py", line 78, in unitTest
+    assert(round(m1, 3) == 65)
+AssertError
+```
+
+断言在单元测试中是很常用的。
+
+> 将大型代码拆分成一个个小的部分，并为每个部分编写单元测试，这一点是很重要的。如果没有单元测试，你将无法知道自己是否正确完成了所有任务，以及未来的某个修改是否会导致你的程序不可用。--- Peter Norvig
+
+![](img/chapter-4/chapter-4-38.png)
+
+### 答案
+
+```python
+def getMedian(self, alist):
+    """返回中位数"""
+    if alist == []:
+        return []
+    blist = sorted(alist)
+    length = len(alist)
+    if length % 2 == 1:
+        # 列表有奇数个元素，返回中间的元素
+        return blist[int(((length + 1) / 2) -  1)]
+    else:
+        # 列表有偶数个元素，返回中间两个元素的均值
+        v1 = blist[int(length / 2)]
+        v2 =blist[(int(length / 2) - 1)]
+        return (v1 + v2) / 2.0
+    
+
+def getAbsoluteStandardDeviation(self, alist, median):
+    """计算绝对偏差"""
+    sum = 0
+    for item in alist:
+        sum += abs(item - median)
+    return sum / len(alist)
+```
+
+可以看到，getMedian函数对列表进行了排序，由于数据量并不大，所以这种方式是可以接受的。如果要对代码进行优化，我们可以使用[选择算法](http://en.wikipedia.org/wiki/Selection_algorithm)。
