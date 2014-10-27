@@ -432,7 +432,7 @@ Candace Parker是篮球运动员，McKayla Maroney是美国女子体操队的一
 
 **头脑风暴**
 
-假设我想通过运动员的身高和体重来预测她所从事的运动，数据集只有两人：Nakia Sanford是篮球运动员，身高6.4英尺（1.95米），体重200磅（90公斤）；Sarah Beale是橄榄球运动员，身高5.1英尺（1.55米），体重190磅（86公斤）。我想知道Catherine Spencer是从事哪项运动的，她的身高是5.1英尺，重200磅，如何预测呢？
+假设我想通过运动员的身高和体重来预测她所从事的运动，数据集只有两人：Nakia Sanford是篮球运动员，身高6尺4寸（76英寸，1.93米），体重200磅（90公斤）；Sarah Beale是橄榄球运动员，身高5尺10寸（70英寸，1.78米），体重190磅（86公斤）。我想知道Catherine Spencer是从事哪项运动的，她的身高是5尺10寸，重200磅，如何预测呢？
 
 如果你认为她是橄榄球运动员，那么你猜对了。但是，如果用曼哈顿距离来进行计算，Catherine和Nakia的距离是6，和Sarah的距离是10，那应该预测她是篮球运动员才对。我们之前是否学过一个方法，能让距离计算更为准确呢？
 
@@ -602,7 +602,6 @@ def getMedian(self, alist):
         v1 = blist[int(length / 2)]
         v2 =blist[(int(length / 2) - 1)]
         return (v1 + v2) / 2.0
-    
 
 def getAbsoluteStandardDeviation(self, alist, median):
     """计算绝对偏差"""
@@ -613,3 +612,115 @@ def getAbsoluteStandardDeviation(self, alist, median):
 ```
 
 可以看到，getMedian函数对列表进行了排序，由于数据量并不大，所以这种方式是可以接受的。如果要对代码进行优化，我们可以使用[选择算法](http://en.wikipedia.org/wiki/Selection_algorithm)。
+
+现在，我们已经将数据从athletesTrainingSet.txt读取出来，并保存为以下形式：
+
+```python
+[('Gymnastics', [54, 66], ['Asuka Teramoto']),
+ ('Basketball', [72, 162], ['Brittainey Raven']),
+ ('Basketball', [78, 204], ['Chen Nan']),
+ ('Gymnastics', [49, 90], ['Gabby Douglas']), ...
+```
+
+我们需要对向量中的数据进行标准化，变成以下结果：
+
+```python
+[('Gymnastics', [-1.93277, -1.21842], ['Asuka Teramoto']),
+ ('Basketball', [1.09243, 1.63447], ['Brittainey Raven']),
+ ('Basketball', [2.10084, 2.88261], ['Chen Nan']),
+ ('Gymnastics', [-2.7731, -0.50520],
+ ('Track', [-0.08403, -0.23774], ['Helalia Johannes']),
+ ('Track', [-0.42017, -0.02972], ['Irina Miketenko']), ...
+```
+
+在init方法中，添加标准化过程：
+
+```python
+    # 获取向量的长度
+    self.vlen = len(self.data[0][1])
+    # 标准化
+    for i in range(self.vlen):
+        self.normalizeColumn(i)
+```
+
+在for循环中逐列进行标准化，即第一次会标准化身高，第二次标准化体重。
+
+**动手实践** 下载[normalizeColumnTemplate.py](code/chapter-4/normalizeColumnTemplate.py)文件，编写normalizeColumn方法。
+
+### 答案
+
+```python
+def normalizeColumn(self, columnNumber):
+    """标准化self.data中的第columnNumber列"""
+    # 将该列的所有值提取到一个列表中
+    col = [v[1][columnNumber] for v in self.data]
+    median = self.getMedian(col)
+    asd = self.getAbsoluteStandardDeviation(col, median)
+    #print("Median: %f   ASD = %f" % (median, asd))
+    self.medianAndDeviation.append((median, asd))
+    for v in self.data:
+        v[1][columnNumber] = (v[1][columnNumber] - median) / asd
+```
+
+可以看到，我将计算得到的中位数和绝对偏差保存在了medianAndDeviation变量中，因为我们会用它来标准化需要预测的向量。比如，我要预测Kelly Miller的运动项目，她身高5尺10寸（70英寸），重140磅，即原始向量为[70, 140]，需要先进行标准化。
+
+我们计算得到的meanAndDeviation为：
+
+```python
+[(65.5, 5.95), (107.0, 33.65)]
+```
+
+它表示向量中第一元素的中位数为65.5，绝对偏差为5.95；第二个元素的中位数为107.0，绝对偏差33.65。
+
+现在我们就利用这组数据将[70, 140]进行标准化。第一个元素的标准分数是：
+
+![](img/chapter-4/chapter-4-39.png)
+
+第二个元素为：
+
+![](img/chapter-4/chapter-4-40.png)
+
+以下是实现它的Python代码：
+
+```python
+def normalizeVector(self, v):
+    """我们已保存了每列的中位数和绝对偏差，现用它来标准化向量v"""
+    vector = list(v)
+    for i in range(len(vector)):
+        (median, asd) = self.medianAndDeviation[i]
+        vector[i] = (vector[i] - median) / asd
+    return vector
+```
+
+最后，我们要编写分类函数，用来预测运动员的项目：
+
+```python
+classifier.classify([70, 140])
+```
+
+在我们的实现中，classify函数只是nearestNeighbor的一层包装：
+
+```python
+def classify(self, itemVector):
+    """预测itemVector的分类"""
+    return self.nearestNeighbor(self.normalizeVector(itemVector))[1][0]
+```
+
+**动手实践** 实现nearestNeighbor函数。
+
+### 答案
+
+```python
+def manhattan(self, vector1, vector2):
+    """计算曼哈顿距离"""
+    return sum(map(lambda v1, v2: abs(v1 - v2), vector1, vector2))
+
+def nearestNeighbor(self, itemVector):
+    """返回itemVector的近邻"""
+    return min([(self.manhattan(itemVector, item[1]), item)
+                for item in self.data])
+```
+
+**好了，我们用200多行代码实现了近邻分类器！**
+
+![](img/chapter-4/chapter-4-40.png)
