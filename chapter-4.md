@@ -723,4 +723,4 @@ def nearestNeighbor(self, itemVector):
 
 **好了，我们用200多行代码实现了近邻分类器！**
 
-![](img/chapter-4/chapter-4-40.png)
+![](img/chapter-4/chapter-4-41.png)
