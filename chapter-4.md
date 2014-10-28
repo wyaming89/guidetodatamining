@@ -724,3 +724,70 @@ def nearestNeighbor(self, itemVector):
 **好了，我们用200多行代码实现了近邻分类器！**
 
 ![](img/chapter-4/chapter-4-41.png)
+
+在完整的[示例代码](chapter-4/code/chapter-4/nearestNeighborClassifier.py#L188)中，我提供了一个test函数，它可以对分类器程序的准确性做一个评价。比如用它来评价上面实现的分类器：
+
+```
+-         Track  Aly Raisman	Gymnastics	62	115
++    Basketball  Crystal Langhorne	Basketball	74	190
++    Basketball  Diana Taurasi	Basketball	72	163
+...
++         Track  Xueqin Wang	Track	64	110
++         Track  Zhu Xiaolin	Track	67	123
+
+80.00% correct
+```
+
+可以看到，这个分类器的准确率是80%。它对篮球运动员的预测很准确，但在预测田径和体操运动员时出现了4个失误。
+
+### 鸢尾花数据集
+
+我们可以用鸢尾花数据集做测试，这个数据集在数据挖掘领域是比较有名的。它是20世纪30年代Ronald Fisher对三种鸢尾花的50个样本做的测量数据（萼片和花瓣）。
+
+![](img/chapter-4/chapter-4-42.png)
+
+> Ronald Fisher是一名伟大的科学家。他对统计学做出了革命性的改进，Richard Dawkins称他为“继达尔文后最伟大生物学家。”
+
+![](img/chapter-4/chapter-4-43.png)
+
+鸢尾花数据集可以在[这里](code/chapter-4/irisTrainingSet.data)找到，你可以测试你的算法，并问自己一些问题：标准化让结果更正确了吗？训练集中的数据量越多越好吗？用欧几里得距离来算会怎样？
+
+*记住* 所有的学习过程都是在你自己的脑中进行的，你付出的努力越多，学到的也就越多。
+
+鸢尾花数据集的格式如下，我们要预测的是Species这一列：
+
+![](img/chapter-4/chapter-4-44.png)
+
+训练集中有120条数据，测试集中有30条，两者没有交集。
+
+测试结果如何呢？
+
+```python
+>>> test('irisTrainingSet.data', 'iristestSet.data')
+93.33% correct
+```
+
+这又一次证明我们的分类算法是简单有效的。有趣的是，如果不对数据进行标准化，它的准确率将达到100%。这个现象我们会在后面讨论。
+
+## 每加仑燃油可以跑多少公里？
+
+最后，我们再来测试另一个广泛使用的数据集，卡内基梅隆大学统计的汽车燃油消耗和公里数数据。它在1983年的美国统计联合会展中使用过，大致格式如下：
+
+![](img/chapter-4/chapter-4-45.png)
+
+这个数据集做过一些修改。我们要预测的是加仑燃油公里数（mpg），使用的数据包括汽缸数、排气量、马力、重量、加速度等。
+
+![](img/chapter-4/chapter-4-46.png)
+
+数据集中有342条记录，50条测试记录，运行结果如下：
+
+```python
+>>> test('mpgTrainingSet.txt', 'mpgTestSet.txt')
+56.00% correct
+```
+
+如果不进行标准化，准确率将只有32%。
+
+![](img/chapter-4/chapter-4-47.png)
+
+> 我们应该如何提高预测的准确率呢？改进分类算法？增加训练集？还是增加特征的数量？我们将在下一章揭晓！
