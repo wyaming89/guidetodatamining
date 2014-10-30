@@ -725,7 +725,7 @@ def nearestNeighbor(self, itemVector):
 
 ![](img/chapter-4/chapter-4-41.png)
 
-在完整的[示例代码](chapter-4/code/chapter-4/nearestNeighborClassifier.py#L188)中，我提供了一个test函数，它可以对分类器程序的准确性做一个评价。比如用它来评价上面实现的分类器：
+在完整的[示例代码](code/chapter-4/nearestNeighborClassifier.py#L188)中，我提供了一个test函数，它可以对分类器程序的准确性做一个评价。比如用它来评价上面实现的分类器：
 
 ```
 -         Track  Aly Raisman	Gymnastics	62	115
