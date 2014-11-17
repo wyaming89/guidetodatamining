@@ -143,3 +143,64 @@
 ![](img/chapter-5/chapter-5-13.png)
 
 > 怎样，是不是觉得混淆矩阵其实并不混淆呢？
+
+## 代码示例
+
+让我们使用加仑公里数这个数据集，格式如下：
+
+![](img/chapter-5/chapter-5-14.png)
+
+我会通过汽车的以下属性来判断它的加仑公里数：汽缸数、排气量、马力、重量、加速度。我将392条数据都存放在mpgData.txt文件中，并用下面这段Python代码将这些数据按层次等分成十份：
+
+```python
+# -*- coding: utf-8 -*-
+
+# 将数据等分成十份的示例代码
+
+import random
+
+def buckets(filename, bucketName, separator, classColumn):
+    """filename是源文件名
+    bucketName是十个目标文件的前缀名
+    separator是分隔符，如制表符、逗号等
+    classColumn是表示数据所属分类的那一列的序号"""
+
+    # 将数据分为10份
+    numberOfBuckets = 10
+    data = {}
+    # 读取数据，并按分类放置
+    with open(filename) as f:
+        lines = f.readlines()
+    for line in lines:
+        if separator != '\t':
+            line = line.replace(separator, '\t')
+        # 获取分类
+        category = line.split()[classColumn]
+        data.setdefault(category, [])
+        data[category].append(line)
+    # 初始化分桶
+    buckets = []
+    for i in range(numberOfBuckets):
+        buckets.append([])       
+    # 将各个类别的数据均匀地放置到桶中
+    for k in data.keys():
+        # 打乱分类顺序
+        random.shuffle(data[k])
+        bNum = 0
+        # 分桶
+        for item in data[k]:
+            buckets[bNum].append(item)
+            bNum = (bNum + 1) % numberOfBuckets
+
+    # 写入文件
+    for bNum in range(numberOfBuckets):
+        f = open("%s-%02i" % (bucketName, bNum + 1), 'w')
+        for item in buckets[bNum]:
+            f.write(item)
+        f.close()
+
+# 调用示例      
+buckets("pimaSmall.txt", 'pimaSmall',',',8)
+```
+
+执行这个程序后会生成10个文件：mpgData01、mpgData02等。
