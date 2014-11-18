@@ -150,7 +150,7 @@
 
 ![](img/chapter-5/chapter-5-14.png)
 
-我会通过汽车的以下属性来判断它的加仑公里数：汽缸数、排气量、马力、重量、加速度。我将392条数据都存放在mpgData.txt文件中，并用下面这段Python代码将这些数据按层次等分成十份：
+我会通过汽车的以下属性来判断它的加仑公里数：汽缸数、排气量、马力、重量、加速度。我将392条数据都存放在mpgData.txt文件中，并用下面这段[Python代码](code/chapter-5/divide.py)将这些数据按层次等分成十份：
 
 ```python
 # -*- coding: utf-8 -*-
@@ -204,3 +204,81 @@ buckets("pimaSmall.txt", 'pimaSmall',',',8)
 ```
 
 执行这个程序后会生成10个文件：mpgData01、mpgData02等。
+
+**编程实践**
+
+你能否修改上一章的[近邻算法程序](code/chapter-4/nearestNeighborClassifier.py#L188)，让`test`函数能够执行十折交叉验证？输出的结果应该是这样的：
+
+![](img/chapter-5/chapter-5-15.png)
+
+**解决方案**
+
+我们需要进行以下几步：
+
+* 修改初始化方法，只读取九个桶中的数据作为训练集；
+* 增加一个方法，从第十个桶中读取测试集；
+* 执行十折交叉验证。
+
+下面我们分步来看：
+
+* 初始化方法`__init__`
+
+`__init__`方法的签名会修改成以下形式：
+
+```python
+def __init__(self, bucketPrefix, testBucketNumber, dataFormat):
+```
+
+每个桶的文件名是mpgData-01、mpgData-02这样的形式，所以`bucketPrefix`就是“mpgData”。`testBucketNumber`是测试集所用的桶，如果是3，则分类器会使用1、2、4-9的桶进行训练。`dataFormat`用来指定数据集的格式，如：
+
+```
+class	num	num	num	num	num	comment
+```
+
+意味着第一列是所属分类，后五列是特征值，最后一列是备注信息。
+
+以下是初始化方法的示例代码：
+
+```python
+class Classifier:
+
+    def __init__(self, bucketPrefix, testBucketNumber, dataFormat):
+        """该分类器程序将从bucketPrefix指定的一系列文件中读取数据，
+	并留出testBucketNumber指定的桶来做测试集，其余的做训练集。
+	dataFormat用来表示数据的格式，如：
+	"class	num	num	num	num	num	comment"
+	"""
+   
+        self.medianAndDeviation = []
+        
+        # 从文件中读取文件
+ 
+        self.format = dataFormat.strip().split('\t')
+        self.data = []
+        # 用1-10来标记桶
+        for i in range(1, 11):
+            # 判断该桶是否包含在训练集中
+            if i != testBucketNumber:
+                filename = "%s-%02i" % (bucketPrefix, i)
+                f = open(filename)
+                lines = f.readlines()
+                f.close()
+                for line in lines[1:]:
+                    fields = line.strip().split('\t')
+                    ignore = []
+                    vector = []
+                    for i in range(len(fields)):
+                        if self.format[i] == 'num':
+                            vector.append(float(fields[i]))
+                        elif self.format[i] == 'comment':
+                            ignore.append(fields[i])
+                        elif self.format[i] == 'class':
+                            classification = fields[i]
+                    self.data.append((classification, vector, ignore))
+        self.rawData = list(self.data)
+        # 获取特征向量的长度
+        self.vlen = len(self.data[0][1])
+        # 标准化数据
+        for i in range(self.vlen):
+            self.normalizeColumn(i)
+```
