@@ -403,3 +403,5 @@ total of 392 instances
 ```
 
 可以在这里下载[代码](code/chapter-5/crossValidation.py)和[数据集](code/chapter-5/mpgData.zip)。
+
+## Kappa检验
