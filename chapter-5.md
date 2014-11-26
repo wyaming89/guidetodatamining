@@ -558,3 +558,75 @@ P(c)表示分类器的准确率，P(r)表示随机分类器的准确率。将之
 以下是示例数据，最后一列的0表示没有糖尿病，1表示患有糖尿病：
 
 ![](img/chapter-5/chapter-5-43.png)
+
+比如说，第一条记录表示一名生过两次小孩的女性，她的血糖浓度是99，舒张压是52，等等。
+
+![](img/chapter-5/chapter-5-44.png)
+
+**代码实践[1]**
+
+本书提供了两份数据集：[pimaSmall.zip](code/chapter-5/pimaSmall.zip)和[pima.zip](code/chapter-5/pima.zip)。前者包含100条记录，后者包含393条记录，都已经等分成了10个文件（10个桶）。我用前面实现的近邻算法计算了pimaSmall数据集，得到的结果如下：
+
+![](img/chapter-5/chapter-5-45.png)
+
+*提示：代码中的heapq.nsmallest(n, list)会返回n个最小的项。[heapq](https://docs.python.org/2/library/heapq.html)是Python内置的优先队列类库。*
+
+你的任务是实现kNN算法。首先在类的init函数中添加参数k：
+
+```python
+def __init__(self, bucketPrefix, testBucketNumber, dataFormat, k):
+```
+
+knn函数的签名应该是：
+
+```python
+def knn(self, itemVector):
+```
+
+它会使用到`self.k`（记得在init函数中保存这个值），它的返回值是0或1。此外，在进行十折交叉验证（tenFold函数）时也要传入k参数。
+
+**解答**
+
+init函数的修改很简单：
+
+```python
+def __init__(self, bucketPrefix, testBucketNumber, dataFormat, k):
+    self.k = k
+    ...
+```
+
+knn函数的实现是：
+
+```python
+def knn(self, itemVector):
+    """使用kNN算法判断itemVector所属类别"""
+    # 使用heapq.nsmallest来获得k个近邻
+    neighbors = heapq.nsmallest(self.k,
+                                [(self.manhattan(itemVector, item[1]), item)
+                                 for item in self.data])
+    # 每个近邻都有投票权
+    results = {}
+    for neighbor in neighbors: 
+        theClass = neighbor[1][0]
+        results.setdefault(theClass, 0)
+        results[theClass] += 1
+    resultList = sorted([(i[1], i[0]) for i in results.items()], reverse=True)
+    # 获取得票最高的分类
+    maxVotes = resultList[0][0]
+    possibleAnswers = [i[1] for i in resultList if i[0] == maxVotes]
+    # 若得票相等则随机选取一个
+    answer = random.choice(possibleAnswers)
+    return(answer)
+```
+
+对tenFold函数的改动如下：
+
+```python
+def tenfold(bucketPrefix, dataFormat, k):
+    results = {}
+    for i in range(1, 11):
+        c = Classifier(bucketPrefix, i, dataFormat, k)
+        ...
+```
+
+你可以从网站上[下载这些代码](code/chapter-5/pimaKNN.py)，不过我的代码并不一定是最优的，仅供参考。
