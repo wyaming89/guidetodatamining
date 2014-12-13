@@ -542,3 +542,44 @@ i500
 ```
 
 ![](img/chapter-6/chapter-6-35.png)
+
+## 共和党还是民主党
+
+我们来看另一个数据集——美国国会投票数据，可以从 [机器学习仓库](http://archive.ics.uci.edu/ml/index.html) 获得。每条记录代表一个选民，第一列是分类名称（democrat, republican），之后是16条法案，用y和n表示该人是否支持。
+
+1. 残疾婴儿法案
+2. 用水成本分摊
+3. 预算改革
+4. 医疗费用
+5. 萨瓦尔多援助
+6. 校园宗教组织
+7. 反卫星武器
+8. 尼加拉瓜援助
+9. MX导弹
+10. 移民法案
+11. 合成燃料缩减
+12. 教育支出法案
+13. 有毒废物基金
+14. 犯罪
+15. 出口免税
+16. 南非出口管控
+
+文件格式如下：
+
+```
+democrat	y	n	y	n	n	y	y	y	y	y	n	n	y	n	n	y
+democrat	y	y	y	n	n	y	y	y	y	n	n	n	n	n	y	y
+republican	y	y	n	y	y	y	n	n	n	y	n	y	y	y	n	n
+```
+
+在调用上一节编写的朴素贝叶斯分类器时使用以下dataFormat参数就可以了：
+
+```python
+"class\tattr\tattr\tattr\tattr\tattr\tattr\tattr\tattr\tattr\tattr\tattr\tattr\tattr\tattr\tattr\tattr"
+```
+
+十折交叉验证的结果是：
+
+![](img/chapter-6/chapter-6-36.png)
+
+看起来不错。
