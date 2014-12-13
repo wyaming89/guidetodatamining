@@ -369,15 +369,15 @@ self.prior = {'i500': 0.6, 'i100': 0.4}
 {'i500': {1: {'appearance': 0.3333333333333333, 'health': 0.4444444444444444,
               'both': 0.2222222222222222},
           2: {'active': 0.4444444444444444, 'sedentary': 0.2222222222222222,
-	      'moderate': 0.3333333333333333},
-	  3: {'aggressive': 0.6666666666666666, 'moderate': 0.3333333333333333},
-	  4: {'yes': 0.6666666666666666, 'no': 0.3333333333333333}},
+              'moderate': 0.3333333333333333},
+          3: {'aggressive': 0.6666666666666666, 'moderate': 0.3333333333333333},
+          4: {'yes': 0.6666666666666666, 'no': 0.3333333333333333}},
  'i100': {1: {'both': 0.5, 'health': 0.16666666666666666, 
               'appearance': 0.3333333333333333},
-	  2: {'active': 0.3333333333333333, 'sedentary': 0.5,
-	      'moderate': 0.16666666666666666},
-	  3: {'aggressive': 0.16666666666666666, 'moderate': 0.8333333333333334},
-	  4: {'yes': 0.3333333333333333, 'no': 0.6666666666666666}}}
+          2: {'active': 0.3333333333333333, 'sedentary': 0.5,
+              'moderate': 0.16666666666666666},
+          3: {'aggressive': 0.16666666666666666, 'moderate': 0.8333333333333334},
+          4: {'yes': 0.3333333333333333, 'no': 0.6666666666666666}}}
 ```
 
 1、2、3、4表示第几列，所以第一行可以解释为购买i500的顾客中运动目的是外表的概率是0.333。
@@ -420,12 +420,12 @@ appearance	active	moderate	yes	i500
 ```python
 {'i500': {1: {'appearance': 3, 'health': 4, 'both': 2},
           2: {'active': 4, 'sedentary': 2, 'moderate': 3},
-	  3: {'aggressive': 6, 'moderate': 3},
-	  4: {'yes': 6, 'no': 3}},
+          3: {'aggressive': 6, 'moderate': 3},
+          4: {'yes': 6, 'no': 3}},
  'i100': {1: {'both': 3, 'health': 1, 'appearance': 2}, 
           2: {'active': 2, 'sedentary': 3, 'moderate': 1},
-	  3: {'aggressive': 1, 'moderate': 5},
-	  4: {'yes': 2, 'no': 4}}}
+          3: {'aggressive': 1, 'moderate': 5},
+          4: {'yes': 2, 'no': 4}}}
 ```
 
 计算概率时，只需将计数除以该模型的总数就可以了：
@@ -439,8 +439,8 @@ class Classifier:
 
     def __init__(self, bucketPrefix, testBucketNumber, dataFormat):
         """bucketPrefix 分桶数据集文件前缀
-	testBucketNumber 测试桶编号
-	dataFormat 数据格式，形如：attr attr attr attr class
+        testBucketNumber 测试桶编号
+        dataFormat 数据格式，形如：attr attr attr attr class
         """
    
         total = 0
@@ -516,7 +516,7 @@ c.classify(['health', 'moderate', 'moderate', 'yes'])
 
 ```python
     def classify(self, itemVector):
-        ""返回itemVector所属类别"""
+        """返回itemVector所属类别"""
         results = []
         for (category, prior) in self.prior.items():
             prob = prior
