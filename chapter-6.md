@@ -820,3 +820,166 @@ def pdf(mean, ssd, x):
 ![](img/chapter-6/chapter-6-70.png)
 
 > 休息一下吧
+
+## 使用Python实现
+
+### 训练阶段
+
+朴素贝叶斯需要用到先验概率和条件概率。让我们回顾一下民主党和共和党的例子：先验概率指的是我们已经掌握的概率，比如美国议会中有233名共和党人，200名民主党人，那共和党人出现的概率就是：
+
+P(共和党) = 233 / 433 = 0.54
+
+我们用P(h)来表示先验概率。而条件概率P(h|D)则表示在已知D的情况下，事件h出现的概率。比如说P(民主党|法案1=yes)。朴素贝叶斯公式中，我们计算的是P(D|h)，如P(法案1=yes|民主党)。
+
+在之前的Python代码中，我们用字典来表示这些概率：
+
+```python
+{'democrat': {'bill 1': {'yes': 0.333, 'no': 0.667},
+              'bill 2': {'yes': 0.778, 'moderate': 0.222}},
+ 'republican': {'bill 1': {'yes': 0.811, 'no': 0.189},
+                'bill 2': {'yes': 0.250, 'no': 0.750}}}
+```
+
+所以民主党中对法案1投赞成票的概率是：P(bill 1=yes|民主党) = 0.667。
+
+对于分类型的数据，我们用上面的方法来保存概率，而对连续性的数据，我们要使用概率密度函数，因此需要保存平均值和样本标准差。如：
+
+```python
+mean = {'democrat': {'age': 57, 'years served': 12},
+        'republican': {'age': 53, 'years served': 7}}
+ssd = {'democrat': {'age': 7, 'years served': 3},
+       'republican': {'age': 5, 'years served': 5}}
+```
+
+和之前一样，数据文件中的每一行表示一条记录，不同的特征值使用制表符分隔，比如下面是比马印第安人糖尿病的数据：
+
+![](img/chapter-6/chapter-6-71.png)
+
+前八列是特征，最后一列是分类（1-患病，0-健康）。
+
+我们同样需要一个格式字符串来表示每一行记录：
+
+* `attr`表示这一列是分类型的特征
+* `num` 表示这一列是数值型的特征
+* `class` 表示这一列是分类
+
+对于比马数据集，格式化字符串是：
+
+```python
+"num    num    num    num    num    num    num    num    class"
+```
+
+我们需要一个数据结构来存储平均值和样本标准差，看下面这几行数据：
+
+![](img/chapter-6/chapter-6-72.png)
+
+为计算每一个分类的平均值，我们需要保存合计值，可以用字典来实现：
+
+```python
+totals = {'1': {1: 8, 2: 378, 3: 182, 4: 102, 5: 1141,
+                6: 98.2, 7: 2.036, 8: 141},
+          '0': {1: 3, 2: 323, 3: 242, 4: 96, 5: 214,
+                6: 98.1, 7: 2.006, 8: 76}}
+```
+
+对于分类1，第一列的合计是8（3 + 4 + 1），第二列的合计是378。
+
+对于分类0，第一列的合计是3（2 + 1 + 0），第二列的合计是323，以此类推。
+
+在计算标准差时，我们还需要保留原始的值：
+
+```python
+numericValues = {'1': {1: [3, 4, 1], 2: [78, 111, 189], ...},
+                 '0': {1: [2, 1, 0], 2: [142, 81, 100], ...}}
+```
+
+将这些逻辑添加到分类器的`__init__`方法中：
+
+```python
+import math
+
+class Classifier:
+    def __init__(self, bucketPrefix, testBucketNumber, dataFormat):
+        """bucketPrefix 分桶数据集文件前缀
+        testBucketNumber 测试桶编号
+        dataFormat 数据格式，形如：attr attr attr attr class
+        """
+        total = 0
+        classes = {}
+        # 对分类型数据进行计数
+        counts = {}
+        # 对数值型数据进行求和
+        # 我们会使用下面两个变量来计算每个分类各个特征的平均值和样本标准差
+        totals = {}
+        numericValues = {}
+        
+        # 从文件中读取数据
+        self.format = dataFormat.strip().split('\t')
+        self.prior = {}
+        self.conditional = {}
+ 
+        # 遍历1-10号桶
+        for i in range(1, 11):
+            # 判断是否跳过
+            if i != testBucketNumber:
+                filename = "%s-%02i" % (bucketPrefix, i)
+                f = open(filename)
+                lines = f.readlines()
+                f.close()
+                for line in lines:
+                    fields = line.strip().split('\t')
+                    ignore = []
+                    vector = []
+                    nums = []
+                    for i in range(len(fields)):
+                        if self.format[i] == 'num':
+                            nums.append(float(fields[i]))
+                        elif self.format[i] == 'attr':
+                            vector.append(fields[i])                           
+                        elif self.format[i] == 'comment':
+                            ignore.append(fields[i])
+                        elif self.format[i] == 'class':
+                            category = fields[i]
+                    # 处理这条记录
+                    total += 1
+                    classes.setdefault(category, 0)
+                    counts.setdefault(category, {})
+                    totals.setdefault(category, {})
+                    numericValues.setdefault(category, {})
+                    classes[category] += 1
+                    # 处理分类型数据
+                    col = 0
+                    for columnValue in vector:
+                        col += 1
+                        counts[category].setdefault(col, {})
+                        counts[category][col].setdefault(columnValue, 0)
+                        counts[category][col][columnValue] += 1
+                    # 处理数值型数据
+                    col = 0
+                    for columnValue in nums:
+                        col += 1
+                        totals[category].setdefault(col, 0)
+                        #totals[category][col].setdefault(columnValue, 0)
+                        totals[category][col] += columnValue
+                        numericValues[category].setdefault(col, [])
+                        numericValues[category][col].append(columnValue)
+
+        # 计算先验概率P(h)
+        for (category, count) in classes.items():
+            self.prior[category] = count / total
+        
+        # 计算条件概率P(h|D)
+        for (category, columns) in counts.items():
+              self.conditional.setdefault(category, {})
+              for (col, valueCounts) in columns.items():
+                  self.conditional[category].setdefault(col, {})
+                  for (attrValue, count) in valueCounts.items():
+                      self.conditional[category][col][attrValue] = (
+                          count / classes[category])
+        self.tmp =  counts               
+        
+        # 计算平均值和样本标准差
+        self.means = {}
+        self.ssd = {}
+        # 动手实践
+```
