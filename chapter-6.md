@@ -983,3 +983,74 @@ class Classifier:
         self.ssd = {}
         # 动手实践
 ```
+
+**动手实践[1]**
+
+为上述代码实现计算平均值和样本标准差的逻辑，输出的结果如下：
+
+```python
+>>> c = Classifier('pimaSmall/pimaSmall', 1, 'num\tnum\tnum\tnum\tnum\tnum\tnum\tnum\tclass')
+>>> c.ssd
+{'1': {1: 4.21137914295475, 2: 29.52281872377408, ...},
+ '0': {1: 2.54694671925252, 2: 23.454755259159146, ...}}
+>>> c.means
+{'1': {1: 5.25, 2: 146.05555555555554, ...},
+ '0': {1: 2.8867924528301887, 2: 111.90566037735849, ...}}
+```
+
+**解答**
+
+```python
+        # 计算平均值和样本标准差
+        self.means = {}
+        self.ssd = {}
+
+        for (category, columns) in totals.items():
+            self.means.setdefault(category, {})
+            for (col, cTotal) in columns.items():
+                self.means[category][col] = cTotal / classes[category]
+
+        for (category, columns) in numericValues.items():
+            self.ssd.setdefault(category, {})
+            for (col, values) in columns.items():
+                SumOfSquareDifferences = 0
+                theMean = self.means[category][col]
+                for value in values:
+                    SumOfSquareDifferences += (value - theMean)**2
+                columns[col] = 0
+                self.ssd[category][col] = math.sqrt(SumOfSquareDifferences / (classes[category]  - 1))
+```
+
+**动手实践[2]**
+
+修改分类函数`classify()`，使其能够使用概率密度函数进行分类。
+
+![](img/chapter-6/chapter-6-73.png)
+
+```python
+    def classify(self, itemVector, numVector):
+        """返回itemVector所属分类"""
+        results = []
+        sqrt2pi = math.sqrt(2 * math.pi)
+        for (category, prior) in self.prior.items():
+            prob = prior
+            col = 1
+            for attrValue in itemVector:
+                if not attrValue in self.conditional[category][col]:
+                    # 该特征值没有出现过，因此概率给0
+                    prob = 0
+                else:
+                    prob = prob * self.conditional[category][col][attrValue]
+                col += 1
+            col = 1
+            for x in  numVector:
+                mean = self.means[category][col]
+                ssd = self.ssd[category][col]
+                ePart = math.pow(math.e, -(x - mean)**2/(2*ssd**2))
+                prob = prob * ((1.0 / (sqrt2pi*ssd)) * ePart)
+                col += 1
+            results.append((prob, category))
+        # 返回概率最高的分类
+        #print(results)
+        return(max(results)[1])
+```
