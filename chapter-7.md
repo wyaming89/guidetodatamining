@@ -152,3 +152,17 @@ P(dislike)×P(I|dislike)×P(am|dislike)×P(stunned|dislike)×...
 
 * b<sup>n</sup> = x 可以转换为 log<sub>b</sub>x = n
 * log<sub>10</sub>(ab) = log<sub>10</sub>(a) + log<sub>10</sub>(b)
+
+## 新闻组语料库
+
+我们下面要处理的数据集是新闻，这些新闻可以分为不同的新闻组，我们会构造一个分类器来判断某则新闻是属于哪个新闻组的：
+
+![](img/chapter-7/chapter-7-15.png)
+
+比如下面这则新闻是属于rec.motorcycles组的：
+
+![](img/chapter-7/chapter-7-16.png)
+
+注意到这则新闻中还有一些拼写错误（如accesories、ussually等），这对分类器是一个不小的挑战。
+
+这些数据集都来自 http://qwone.com/~jason/20Newsgroups/ （我们使用的是20news-bydate数据集），你也可以从 [这里](http://guidetodatamining.com/guide/data/20news-bydate.zip) 获得。这个数据集包含18,846个文档，并将训练集（60%）和测试集放在了不同的目录中，每个子目录都是一个新闻组，目录中的文件即新闻文本。
