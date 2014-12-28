@@ -201,3 +201,110 @@ P(dislike)×P(I|dislike)×P(am|dislike)×P(stunned|dislike)×...
 ![](img/chapter-7/chapter-7-21.png)
 
 > 不要盲目地使用停词表！
+
+### 编写Python代码
+
+首先让我们实现朴素贝叶斯分类器的训练部分。训练集的格式是这样的：
+
+![](img/chapter-7/chapter-7-22.png)
+
+最上层的目录是训练集（20news-bydate-train），其下的子目录代表不同的新闻组（如alt.atheism），子目录中有多个文本文件，即新闻内容。测试集的目录结构也是相同的。因此，分类器的初始化代码要完成以下工作：
+
+1. 读取停词列表；
+2. 获取训练集中各目录（分类）的名称；
+3. 对于各个分类，调用train方法，统计单词出现的次数；
+4. 计算下面的公式：
+
+![](img/chapter-7/chapter-7-23.png)
+
+```python
+from __future__ import print_function
+import os, codecs, math
+
+class BayesText:
+
+    def __init__(self, trainingdir, stopwordlist):
+        """朴素贝叶斯分类器
+        trainingdir 训练集目录，子目录是分类，子目录中包含若干文本
+        stopwordlist 停词列表（一行一个）
+        """
+        self.vocabulary = {}
+        self.prob = {}
+        self.totals = {}
+        self.stopwords = {}
+        f = open(stopwordlist)
+        for line in f:
+            self.stopwords[line.strip()] = 1
+        f.close()
+        categories = os.listdir(trainingdir)
+        # 将不是目录的元素过滤掉
+        self.categories = [filename for filename in categories
+                           if os.path.isdir(trainingdir + filename)]
+        print("Counting ...")
+        for category in self.categories:
+            print('    ' + category)
+            (self.prob[category],
+             self.totals[category]) = self.train(trainingdir, category)
+        # 删除出现次数小于3次的单词
+        toDelete = []
+        for word in self.vocabulary:
+            if self.vocabulary[word] < 3:
+                # 遍历列表时不能删除元素，因此做一个标记
+                toDelete.append(word)
+        # 删除
+        for word in toDelete:
+            del self.vocabulary[word]
+        # 计算概率
+        vocabLength = len(self.vocabulary)
+        print("Computing probabilities:")
+        for category in self.categories:
+            print('    ' + category)
+            denominator = self.totals[category] + vocabLength
+            for word in self.vocabulary:
+                if word in self.prob[category]:
+                    count = self.prob[category][word]
+                else:
+                    count = 1
+                self.prob[category][word] = (float(count + 1)
+                                             / denominator)
+        print ("DONE TRAINING\n\n")
+                    
+
+    def train(self, trainingdir, category):
+        """计算分类下各单词出现的次数"""
+        currentdir = trainingdir + category
+        files = os.listdir(currentdir)
+        counts = {}
+        total = 0
+        for file in files:
+            #print(currentdir + '/' + file)
+            f = codecs.open(currentdir + '/' + file, 'r', 'iso8859-1')
+            for line in f:
+                tokens = line.split()
+                for token in tokens:
+                    # 删除标点符号，并将单词转换为小写
+                    token = token.strip('\'".,?:-')
+                    token = token.lower()
+                    if token != '' and not token in self.stopwords:
+                        self.vocabulary.setdefault(token, 0)
+                        self.vocabulary[token] += 1
+                        counts.setdefault(token, 0)
+                        counts[token] += 1
+                        total += 1
+            f.close()
+        return(counts, total)
+```
+
+训练结果存储在一个名为prop的字典里，字典的键是分类，值是另一个字典——键是单词，值是概率。
+
+![](img/chapter-7/chapter-7-24.png)
+
+god这个词在rec.motorcycles新闻组中出现的概率是0.00013，而在soc.religion.christian新闻组中出现的概率是0.00424。
+
+训练阶段的另一个产物是分类列表：
+
+![](img/chapter-7/chapter-7-25.png)
+
+![](img/chapter-7/chapter-7-26.png)
+
+**训练结束了，下面让我们开始进行文本分类吧。**
