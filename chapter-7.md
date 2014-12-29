@@ -308,3 +308,85 @@ god这个词在rec.motorcycles新闻组中出现的概率是0.00013，而在soc.
 ![](img/chapter-7/chapter-7-26.png)
 
 **训练结束了，下面让我们开始进行文本分类吧。**
+
+请尝试编写一个分类器，达成以下效果：
+
+![](img/chapter-7/chapter-7-27.png)
+
+![](img/chapter-7/chapter-7-28.png)
+
+```python
+    def classify(self, filename):
+        results = {}
+        for category in self.categories:
+            results[category] = 0
+        f = codecs.open(filename, 'r', 'iso8859-1')
+        for line in f:
+            tokens = line.split()
+            for token in tokens:
+                #print(token)
+                token = token.strip('\'".,?:-').lower()
+                if token in self.vocabulary:
+                    for category in self.categories:
+                        if self.prob[category][token] == 0:
+                            print("%s %s" % (category, token))
+                        results[category] += math.log(
+                            self.prob[category][token])
+        f.close()
+        results = list(results.items())
+        results.sort(key=lambda tuple: tuple[1], reverse = True)
+        # 如果要调试，可以打印出整个列表。
+        return results[0][0]
+```
+
+最后我们编写一个函数对测试集中的所有文档进行分类，并计算准确率：
+
+```python
+    def testCategory(self, directory, category):
+        files = os.listdir(directory)
+        total = 0
+        correct = 0
+        for file in files:
+            total += 1
+            result = self.classify(directory + file)
+            if result == category:
+                correct += 1
+        return (correct, total)
+
+    def test(self, testdir):
+        """测试集的目录结构和训练集相同"""
+        categories = os.listdir(testdir)
+        # 过滤掉不是目录的元素
+        categories = [filename for filename in categories if
+                      os.path.isdir(testdir + filename)]
+        correct = 0
+        total = 0
+        for category in categories:
+            print(".", end="")
+            (catCorrect, catTotal) = self.testCategory(
+                testdir + category + '/', category)
+            correct += catCorrect
+            total += catTotal
+        print("\n\nAccuracy is  %f%%  (%i test instances)" %
+              ((float(correct) / total) * 100, total))
+```
+
+在不使用停词列表的情况下，这个分类器的效果是：
+
+![](img/chapter-7/chapter-7-29.png)
+
+![](img/chapter-7/chapter-7-30.png)
+
+> 准确率77.77%，看起来很不错。如果用了停词列表效果会如何呢？
+
+> 那让我们来测试一下吧！
+
+请自行到网络上查找一些停词列表，并填写以下表格：
+
+![](img/chapter-7/chapter-7-31.png)
+
+我找到了两个停词列表，分别是包含[25个词](http://nlp.stanford.edu/IR-book/html/htmledition/dropping-common-terms-stop-words-1.html) 和[174个词](http://www.ranks.nl/stopwords) 的列表，结果如下：
+
+![](img/chapter-7/chapter-7-32.png)
+
+看来第二个停词列表能提升2%的效果，你的结果如何？
