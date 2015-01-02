@@ -102,3 +102,42 @@
 ![](img/chapter-8/chapter-8-18.png)
 
 ![](img/chapter-8/chapter-8-19.png)
+
+## 编写层次聚类算法
+
+![](img/chapter-8/chapter-8-20.png)
+
+> 我们可以使用优先队列来实现这个聚类算法。
+
+> 什么是优先队列呢？
+
+普通的队列有“先进先出”的规则，比如向队列先后添加Moa、Suzuka、Yui，取出时得到的也是Moa、Suzuka、Yui：
+
+![](img/chapter-8/chapter-8-21.png)
+
+而对于优先队列，每个元素都可以附加一个优先级，从队列中取出时会得到优先级最高的元素。比如说，我们定义年龄越小优先级越高，以下是插入过程：
+
+![](img/chapter-8/chapter-8-22.png)
+
+取出的第一个元素是Yui，因为她的年龄最小：
+
+![](img/chapter-8/chapter-8-23.png)
+
+我们看看Python中如何使用优先队列：
+
+```python
+>>> from Queue import PriorityQueue           # 加载优先队列类
+>>> singersQueue = PriorityQueue()            # 创建对象
+>>> singersQueue.put((16, 'Suzuka Nakamoto')) # 插入元素
+>>> singersQueue.put((15, 'Moa Kikuchi'))
+>>> singersQueue.put((14, 'Yui Mizuno'))
+>>> singersQueue.put((17, 'Ayaka Sasaki'))
+>>> singersQueue.get() # 获取第一个元素，即最年轻的歌手Yui。
+(14, 'Yui Mizuno')
+>>> singersQueue.get()
+(15, 'Moa Kikuchi')
+>>> singersQueue.get()
+(16, 'Suzuka Nakamoto')
+>>> singersQueue.get()
+(17, 'Ayaka Sasaki')
+```
