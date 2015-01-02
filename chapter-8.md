@@ -141,3 +141,71 @@
 >>> singersQueue.get()
 (17, 'Ayaka Sasaki')
 ```
+
+在进行聚类时，我们将分类、离它最近的分类、以及距离插入到优先队列中，距离作为优先级。比如上面的犬种示例，Border Collie最近的分类是Portuguese WD，距离是0.232：
+
+![](img/chapter-8/chapter-8-24.png)
+
+我们将优先队列中距离最小的两个分类取出来，合并成一个分类，并重新插入到优先队列中。比如下图是将Border Collie和Portuguese WD合并后的结果：
+
+![](img/chapter-8/chapter-8-25.png)
+
+重复这个过程，直到队列中只有一个元素为止。当然，我们插入的数据会复杂一些，请看下面的讲解。
+
+### 从文件中读取数据
+
+数据文件是CSV格式的（以逗号分隔），第一行是列名，第一列是犬种，第二列之后是特征值：
+
+![](img/chapter-8/chapter-8-26.png)
+
+我们用Python的列表结构来存储这些数据，data[0]用来存放所有记录的分类，如data[0][0]是Border Collie，data[0][1]是Boston Terrier。data[1]则是所有记录的高度，data[2]是重量。特征列的数据都会转换成浮点类型，如data[1][0]是20.0，data[2][0]是45.0等。在读取数据时就需要对其进行标准化。此外，我们接下来会使用“下标”这个术语，如第一条记录Border Collie的下标是0，第二条记录Boston Terrier下标是1等。
+
+### 初始化优先队列
+
+以Border Collie为例，我们需要计算它和其它犬种的距离，保存在Python字典里：
+
+```python
+{1: ((0, 1), 1.0244),  # Border Collie（下标为0）和Boston Terrier（下标为1）之间的距离为1.0244
+ 2: ((0, 2), 0.463),   # Border Collie和Brittany Spaniel（下标为2）之间的距离为0.463
+ ...
+ 10: ((0, 10), 2.756)} # Border Collie和Yorkshire Terrier的距离为2.756
+```
+
+此外，我们会记录Border Collie最近的分类及距离：这对犬种是(0, 8)，即下标为0的Border Collie和下标为8的Portuguese WD，距离是0.232。
+
+#### 距离相等的问题以及为何要使用元组
+
+你也许注意到了，Portuguese WD和Standard Poodle的距离是0.566，Boston Terrier和Brittany Spaniel的距离也是0.566，如果我们通过最短距离来取，很可能会取出Standard Poodle和Boston Terrier进行组合，这显然是错误的，所以我们才会使用元组来存放这对犬种的下标，以作判断。比如说，Portuguese WD的记录是：
+
+```python
+['Portuguese Water Dog', 0.566, (8, 9)]
+```
+
+它的近邻Standard Poodle的记录是：
+
+```python
+['Standard Poodle', 0.566, (8, 9)]
+```
+
+我们可以通过这个元组来判断这两条记录是否是一对。
+
+#### 距离相等的另一个问题
+
+在介绍优先队列时，我用了歌手的年龄举例，如果他们的年龄相等，取出的顺序又是怎样的呢？
+
+![](img/chapter-8/chapter-8-27.png)
+
+可以看到，如果年龄相等，优先队列会根据记录中的第二个元素进行判断，即歌手的姓名，并按字母顺序返回，如Avaka会比Moa优先返回。
+
+在犬种示例中，我们让距离成为第一优先级，下标成为第二优先级。因此，我们插入到优先队列的一条完整记录是这样的：
+
+```python
+(0.232, # 最小距离
+ 0,     # 下标
+ [['Border Collie'], # 当前分类
+  ['Portuguese Water Dog', 0.232], # 近邻信息
+  {1: ((0, 1), 1.0244),
+   2: ((0, 2), 0.463),
+   ...
+   10: ((0, 10), 2.756)}])
+```
