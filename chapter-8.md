@@ -199,13 +199,30 @@
 
 在犬种示例中，我们让距离成为第一优先级，下标成为第二优先级。因此，我们插入到优先队列的一条完整记录是这样的：
 
+![](img/chapter-8/chapter-8-28.png)
+
+### 重复下述步骤，直到仅剩一个分类
+
+我们从优先队列中取出两个元素，对它们进行合并。如合并Border Collie和Portuguese WD后，会形成一个新的分类：
+
 ```python
-(0.232, # 最小距离
- 0,     # 下标
- [['Border Collie'], # 当前分类
-  ['Portuguese Water Dog', 0.232], # 近邻信息
-  {1: ((0, 1), 1.0244),
-   2: ((0, 2), 0.463),
-   ...
-   10: ((0, 10), 2.756)}])
+['Border Collie', 'Portuguese WD']
 ```
+
+然后我们需要计算新的分类和其它分类之间的距离，方法是对取出的两个分类的距离字典进行合并。如第一个分类的距离字段是distanceDict1，第二个分类的是distanceDict2，新的距离字段是newDistanceDict：
+
+```
+初始化newDistanceDict
+对于distanceDict1的每一个键值对:
+    如果这个键在distanceDict2中存在:
+        如果这个键在distanceDict1中的距离要比在distanceDict2中的距离小:
+            将distanceDict1中的距离存入newDistanceDict
+        否则:
+            将distanceDict2中的距离存入newDistanceDict
+```
+
+![](img/chapter-8/chapter-8-29.png)
+
+经过计算后，插入到优先队列中的新分类的完整记录是：
+
+![](img/chapter-8/chapter-8-30.png)
