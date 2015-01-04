@@ -250,7 +250,6 @@
 from queue import PriorityQueue
 import math
 
-
 """
 层次聚类示例代码
 """
@@ -264,7 +263,6 @@ def getMedian(alist):
         return tmp[alen // 2]
     else:
         return (tmp[alen // 2] + tmp[(alen // 2) - 1]) / 2
-    
 
 def normalizeColumn(column):
     """计算修正的标准分"""
@@ -300,22 +298,13 @@ class hClusterer:
                 self.data[i] = normalizeColumn(self.data[i])
 
         ###
-        ###  I have read in the data and normalized the 
-        ###  columns. Now for each element i in the data, I am going to
-        ###     1. compute the Euclidean Distance from element i to all the 
-        ###        other elements.  This data will be placed in neighbors,
-        ###        which is a Python dictionary. Let's say i = 1, and I am 
-        ###        computing the distance to the neighbor j and let's say j 
-        ###        is 2. The neighbors dictionary for i will look like
-        ###        {2: ((1,2), 1.23),  3: ((1, 3), 2.3)... }
+        ###  数据已经读入内存并做了标准化，对于每一条记录，将执行以下步骤：
+        ###     1. 计算该分类和其他分类的距离，如当前分类的下标是1，
+        ###        它和下标为2及下标为3的分类之间的距离用以下形式表示：
+        ###        {2: ((1, 2), 1.23),  3: ((1, 3), 2.3)... }
+        ###     2. 找出距离最近的分类；
+        ###     3. 将该分类插入到优先队列中。
         ###
-        ###     2. find the closest neighbor
-        ###
-        ###     3. place the element on a priority queue, called simply queue,
-        ###        based on the distance to the nearest neighbor (and a counter
-        ###        used to break ties.
-
-
 
         # 插入队列
         rows = len(self.data[0])              
@@ -336,24 +325,22 @@ class hClusterer:
                         minDistance = dist
                         nearestNeighbor = j
                         nearestNum = j
-            # create nearest Pair
+            # 记录这两个分类的配对信息
             if i < nearestNeighbor:
                 nearestPair = (i, nearestNeighbor)
             else:
                 nearestPair = (nearestNeighbor, i)
                 
-            # put instance on priority queue    
+            # 插入优先队列
             self.queue.put((minDistance, self.counter,
                             [[self.data[0][i]], nearestPair, neighbors]))
             self.counter += 1
-    
 
     def distance(self, i, j):
         sumSquares = 0
         for k in range(1, self.cols):
             sumSquares += (self.data[k][i] - self.data[k][j])**2
         return math.sqrt(sumSquares)
-            
 
     def cluster(self):
          done = False
@@ -364,48 +351,33 @@ class hClusterer:
                  nextOne = self.queue.get()
                  nearPair = nextOne[2][1]
                  tmp = []
-                 ##
-                 ##  I have just popped two elements off the queue,
-                 ##  topOne and nextOne. I need to check whether nextOne
-                 ##  is topOne's nearest neighbor and vice versa.
-                 ##  If not, I will pop another element off the queue
-                 ##  until I find topOne's nearest neighbor. That is what
-                 ##  this while loop does.
-                 ##
-
+                 
+                 ##  我从队列中取出了两个元素：topOne和nextOne，
+                 ##  检查这两个分类是否是一对，如果不是就继续从优先队列中取出元素，
+                 ##  直至找到topOne的配对分类为止。
                  while nearPair != nearestPair:
                      tmp.append((nextOne[0], self.counter, nextOne[2]))
                      self.counter += 1
                      nextOne = self.queue.get()
                      nearPair = nextOne[2][1]
-                 ##
-                 ## this for loop pushes the elements I popped off in the
-                 ## above while loop.
-                 ##                 
+                     
+                 ## 将不处理的元素退回给优先队列
                  for item in tmp:
                      self.queue.put(item)
                      
                  if len(topOne[2][0]) == 1:
-                    item1 = topOne[2][0][0]
+                     item1 = topOne[2][0][0]
                  else:
                      item1 = topOne[2][0]
                  if len(nextOne[2][0]) == 1:
-                    item2 = nextOne[2][0][0]
+                     item2 = nextOne[2][0][0]
                  else:
                      item2 = nextOne[2][0]
-                 ##  curCluster is, perhaps obviously, the new cluster
-                 ##  which combines cluster item1 with cluster item2.
+                 ##  curCluster即合并后的分类
                  curCluster = (item1, item2)
 
-                 ## Now I am doing two things. First, finding the nearest
-                 ## neighbor to this new cluster. Second, building a new
-                 ## neighbors list by merging the neighbors lists of item1
-                 ## and item2. If the distance between item1 and element 23
-                 ## is 2 and the distance betweeen item2 and element 23 is 4
-                 ## the distance between element 23 and the new cluster will
-                 ## be 2 (i.e., the shortest distance).
-                 ##
-
+                 ## 对于这个新的分类需要做两件事情：首先找到离它最近的分类，然后合并距离字典。
+                 ## 如果item1和元素23的距离是2，item2和元素23的距离是4，我们取较小的那个距离，即单链聚类。
                  minDistance = 99999
                  nearestPair = ()
                  nearestNeighbor = ''
@@ -429,16 +401,10 @@ class hClusterer:
                     self.queue.put( (minDistance, self.counter,
                                      [curCluster, nearestPair, merged]))
                     self.counter += 1
-                               
-                        
-                         
-
 
 def printDendrogram(T, sep=3):
-    """Print dendrogram of a binary tree.  Each tree node is represented by a
-    length-2 tuple. printDendrogram is written and provided by David Eppstein
-    2002. Accessed on 14 April 2014:
-    http://code.activestate.com/recipes/139422-dendrogram-drawing/ """
+    """打印二叉树状图。树的每个节点是一个二元组。这个方法摘自：
+    http://code.activestate.com/recipes/139422-dendrogram-drawing/"""
 	
     def isPair(T):
         return type(T) == tuple and len(T) == 2
@@ -487,11 +453,49 @@ def printDendrogram(T, sep=3):
     traverse(T, maxHeight(T), -1)
 
 
-
-
-filename = '//Users/raz/Dropbox/guide/data/dogs.csv'
+filename = '/Users/raz/Dropbox/guide/data/dogs.csv'
 
 hg = hClusterer(filename)
 cluster = hg.cluster()
 printDendrogram(cluster)
 ```
+
+运行结果和我们手算的一致：
+
+![](img/chapter-8/chapter-8-32.png)
+
+**动手实践**
+
+[这里](code/chapter-8/cereal.csv)提供了77种早餐麦片的营养信息，包括以下几项：
+
+* 麦片名称
+* 热量
+* 蛋白质
+* 脂肪
+* 纳
+* 纤维
+* 碳水化合物
+* 糖
+* 钾
+* 维生素
+
+![](img/chapter-8/chapter-8-33.png)
+
+请对这个数据集进行层次聚类：
+
+* 哪种麦片和Trix最相近？
+* 与Muesli Raisins & Almonds最相近的是？
+
+> 数据集来自：http://lib.stat.cmu.edu/DASL/Datafiles/Cereals.html
+
+**结果**
+
+我们只需将代码中的文件名替换掉就可以了，结果如下：
+
+![](img/chapter-8/chapter-8-34.png)
+
+因此Trix和Fruity Pebbles最相似（你可以去买这两种麦片尝尝）。Muesli Raisins & Almonds和Muesli Peaches & Pecans最相似。
+
+![](img/chapter-8/chapter-8-35.png)
+
+> 好了，这就是层次聚类算法，很简单吧！
