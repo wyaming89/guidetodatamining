@@ -31,7 +31,7 @@
 
 ![](img/chapter-7/chapter-7-3.png)
 
-### 自动判别文本中的感情色测
+### 自动判别文本中的感情色彩
 
 ![](img/chapter-7/chapter-7-4.png)
 
