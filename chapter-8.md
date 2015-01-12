@@ -809,3 +809,57 @@ km = kClusterer('../../data/dogs.csv', 3)
 km.kCluster()
 km.showMembers()
 ```
+
+![](img/chapter-8/chapter-8-54.png)
+
+> 我们来分析一下这段代码。
+
+犬种数据用表格来展示是这样的，身高和体重都做了标准化：
+
+![](img/chapter-8/chapter-8-55.png)
+
+因为需要按列存储，转化后的Python格式是这样的：
+
+```python
+data = [['Border Collie', 'Bosten Terrier', 'Brittany Spaniel', ...],
+        [0, -0.7213, -0.3607, ...],
+        [-0.1455, -0.7213, -0.4365, ...],
+        ...]
+```
+
+我们在层次聚类中用的也是此法，这样做的好处是能够方便地应用不通的数学函数。比如计算中位数和计算标准分的函数，都是以列表作为参数的：
+
+```python
+>>> normalizeColumn([8, 6, 4, 2])
+[1.5, 0.5, -0.5, -1.5]
+```
+
+`__init__`函数首先将文件读入进行来，按列存储，并进行标准化。随后，它会选取k个起始点，并将记录中的点分配给这些中心点。`kCluster`函数则开始迭代计算中心点的位置，直到少于1%的点发生变动位为止。
+
+程序的运行结果如下：
+
+```
+Final SSE: 5.243159
+
+Class 0
+=======
+Bullmastiff
+Great Dane
+
+Class 1
+=======
+Boston Terrier
+Chihuahua
+Yorkshire Terrier
+
+Class 2
+=======
+Border Collie
+Brittany Spaniel
+German Shepherd
+Golden Retriever
+Portuguese Water Dog
+Standard Poodle
+```
+
+聚类结果非常棒！
