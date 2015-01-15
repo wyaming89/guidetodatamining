@@ -971,3 +971,60 @@ k-means++选取起始点的方法总结下来就是：第一个点还是随机�
 ![](img/chapter-8/chapter-8-65.png)
 
 > 好了，下面让我们开始写代码吧！
+
+**代码实践**
+
+你能用Python实现k-means++算法吗？k-means++和k-means的唯一区别就是起始点的选取过程，你需要做的是将下面的代码：
+
+```python
+self.centroids = [[self.data[i][r] for i in range(1, len(self.data))]
+                   for r in random.sample(range(len(self.data[0])),
+                                          self.k)]
+```
+
+替换为：
+
+```python
+self.selectInitialCentroids()
+```
+
+你的任务就是编写这个函数！
+
+**解答**
+
+```python
+def distanceToClosestCentroid(self, point, centroidList):
+    result = self.eDistance(point, centroidList[0])
+    for centroid in centroidList[1:]:
+        distance = self.eDistance(point, centroid)
+        if distance < result:
+            result = distance
+    return result
+
+def selectInitialCentroids(self):
+    """实现k-means++算法中的起始点选取过程"""
+    centroids = []
+    total = 0
+    # 首先随机选取一个点
+    current = random.choice(range(len(self.data[0])))
+    centroids.append(current)
+    # 开始选取剩余的点
+    for i in range(0, self.k - 1):
+        # 计算每个点到最近的中心点的距离
+        weights = [self.distanceToClosestCentroid(x, centroids) 
+                   for x in range(len(self.data[0]))]
+        total = sum(weights)
+        # 转换为权重
+        weights = [x / total for x in weights]
+        # 开始随机选取
+        num = random.random()
+        total = 0
+        x = -1
+        # 模拟轮盘游戏
+        while total < num:
+            x += 1
+            total += weights[x]
+        entroids.append(x)
+    self.centroids = [[self.data[i][r]  for i in range(1, len(self.data))]
+                      for r in centroids]
+```
