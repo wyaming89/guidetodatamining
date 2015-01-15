@@ -990,6 +990,8 @@ self.selectInitialCentroids()
 
 你的任务就是编写这个函数！
 
+![](img/chapter-8/chapter-8-66.png)
+
 **解答**
 
 ```python
