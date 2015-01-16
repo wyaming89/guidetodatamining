@@ -1,8 +1,14 @@
 面向程序员的数据挖掘指南
 ========================
 
+作者：[Ron Zacharski](http://zacharski.org/)
+
+[![CC BY-NC 3.0](http://i.creativecommons.org/l/by-nc/3.0/80x15.png)](http://creativecommons.org/licenses/by-nc/3.0/deed.en_US)
+
 欢迎辞
 ------
+
+![](img/mozi.jpeg)
 
 这是一本用于学习基本数据挖掘知识的书籍。大部分关于数据挖掘的书籍都着重于讲解理论知识，难以理解，让人望而却步。不要误会，这些理论知识还是非常重要的。但如果你是一名程序员，想对数据挖掘做一些了解，一定会需要一本面向初学者的入门书籍。这就是撰写本书的初衷。
 
