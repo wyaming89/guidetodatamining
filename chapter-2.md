@@ -165,7 +165,7 @@ users = {"Angelica": {"Blues Traveler": 3.5, "Broken Bells": 2.0, "Norah Jones":
 我们可以用以下方式来获取某个用户的评分：
 
 ```python
->>> user["Veronica"]
+>>> users["Veronica"]
 {"Blues Traveler": 3.0, "Norah Jones": 5.0, "Phoenix": 4.0, "Slightly Stoopid": 2.5, "The Strokes": 3.0}
 >>>
 ```
