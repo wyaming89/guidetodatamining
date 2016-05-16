@@ -1,7 +1,7 @@
 第一章：简介
 ============
 
-原文链接：http://guidetodatamining.com/chapter-1/
+原文链接：http://guidetodatamining.com/chapter1/
 
 内容：
 * 寻找事物
