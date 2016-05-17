@@ -1,6 +1,6 @@
 # 第二章：推荐系统入门
 
-原文：http://guidetodatamining.com/chapter-2/
+原文：http://guidetodatamining.com/chapter2/
 
 内容：
 * 推荐系统工作原理
