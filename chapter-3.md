@@ -333,7 +333,7 @@ S<sub>i,N</sub>表示物品i和N的相似度，R<sub>u,N</sub>表示用户u对�
 
 ![](img/chapter-3/chapter-3-41.png)
 
-P<sup>WS1</sup>(u)<sub>j</sub>表示我们将预测用户u对物品i的评分。比如P<sup>WS1</sup>(Ben)<sub>Whitney Houston</sub>表示Ben对Whitney Houston的预测评分。下面就让我们来求解这个问题。
+P<sup>WS1</sup>(u)<sub>j</sub>表示我们将预测用户u对物品j的评分。比如P<sup>WS1</sup>(Ben)<sub>Whitney Houston</sub>表示Ben对Whitney Houston的预测评分。下面就让我们来求解这个问题。
 
 首先来看分子：
 
